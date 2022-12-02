@@ -48,11 +48,13 @@ buttonMult.addEventListener('click', printSymbol);
 buttonSubtract.addEventListener('click', printSymbol);
 buttonAdd.addEventListener('click', printSymbol);
 buttonC.addEventListener('click', resetall);
-//buttonEqual.addEventListener('click', totalreturn);
+buttonEqual.addEventListener('click', equalTotal);
 
 
 
 // Functions to input numbers and operators into the display
+
+//Function to input numbers
 
 function printNumber (e) {
  
@@ -67,10 +69,13 @@ function printNumber (e) {
     accumulatedVal.push(num);
     }
     //console.log(accumulatedVal);
+    subDisplay2.style.color = 'hsl(0, 0%, 67%)';
     text = accumulatedVal.join('')
     showcaseOutput(text);
            
   }
+
+  //Function to input operation symbols
   
   function printSymbol (e) {
    
@@ -92,6 +97,7 @@ function printNumber (e) {
     
   }
   
+  //Function to input the decimal period
 
   function printDecimal (e) {
        
@@ -120,7 +126,6 @@ function printNumber (e) {
        
      } 
 
-    // ^[0-9]+(\.)?[0-9]*([\W][0-9]*(\.)?[0-9]+)*$
        
 
 //Function to obtain input and print output in the second screen 
@@ -129,8 +134,8 @@ const regex2 = /(\+)|(\-)|(\*)|(\/)/g;
 const regex3 = /^[0-9]+(\.[0-9]+)[\W][0-9]+((\.)[0-9]+)?$/;
 const regex4 = /^[0-9]*(\.)?[0-9]*[\W][0-9]*(\.)?[0-9]*([\W][0-9]*(\.)?[0-9]+)*$/;
 
-let result1;
-let result2;
+let resultx;
+let resulty;
 let text;
 let operatorSigns;
 let stringNumbers;
@@ -143,112 +148,85 @@ var defaultVal = subDisplay2.defaultValue;
   
   function showcaseOutput () {
    
-    result1 = regex3.exec(text);
-    result2 = regex4.exec(text);
+    resultx = regex3.exec(text);
+    resulty = regex4.exec(text);
     
-    if ((result1 == null) && (typeof(parseInt(text) == 'number'))) {
-      y = parseInt(text);
+    if ((resultx == null) && (typeof(parseInt(text) == 'number'))) {
+     let y = parseInt(text);
        subDisplay2.value = y;
     } 
- /*
-    if (result1) {
-        operatorSigns = result1[0].match(regex2);
-        stringNumbers = result1[0].match(regex);
-        numeros = stringNumbers.map(Number);
-        multDivOperation();
-        addSubtractOperation();
-        totalreturn();  
-        y = total;
-        subDisplay2.value = y; 
-        
-     }
-     */
-   if (result2) {
-      operatorSigns = result2[0].match(regex2);
+
+   if (resulty) {
+      operatorSigns = resulty[0].match(regex2);
       console.log(operatorSigns);
-      stringNumbers = result2[0].match(regex);
+      stringNumbers = resulty[0].match(regex);
       console.log(stringNumbers);
       numeros = stringNumbers.map(Number);
       console.log(numeros);
-      signsOrder(operatorSigns);
-      indicesOfSigns.sort();
+      signsOrder(operatorSigns, stringNumbers);
       console.log(indicesOfSigns);
-      multDivOperation(indicesOfSigns);
       console.log(differences);
+      multDivOperation(indicesOfSigns);
       console.log(multdiv);
 
-
-
-      signsOrder2(operatorSigns);
-      indicesOfminusplusSigns.sort();
+      signsOrder2(operatorSigns, stringNumbers);
       console.log(indicesOfminusplusSigns);
       addSubtractOperation(indicesOfminusplusSigns);
 
       totalreturn();  
-      y = total;  
-      subDisplay2.value = y; 
+      subDisplay2.value = total.toFixed(10); 
       
-     
-     }
+      }
      reset1();
+     }
      
+ 
 
-    }  
    
 // Functions to do operations
 
  
 // this is to get the index positions of multiplication & division signs
 
-const elemenTimes = '*';
-const elementDivide = '/';
-let idx;
-let idDiv;
-
-
 
 let indicesOfSigns = [];
 
-function signsOrder(array) { 
-  
-  idx = array.indexOf(elemenTimes);
-  idDiv = array.indexOf(elementDivide);
 
-  while (idx !== -1) {
-    indicesOfSigns.push(idx);
-    idx = array.indexOf(elemenTimes, idx + 1);
-   }
-    while (idDiv !== -1) {
-    indicesOfSigns.push(idDiv);
-    idDiv = array.indexOf(elementDivide, idDiv + 1);
-  }
-
+function signsOrder(array1, array2) {  
+  for(let i =0; i < array2.length-1; ++i) {
+     if (array1[i] === '*' || array1[i] === '/'){
+    indicesOfSigns.push(i);
+    }
+   }   
 };
 
 
 
+// get one's to find consecutiveness of multiplication & division
+
+let differences;
+
 // function to multiply and divide numbers in the calculator
 
-let differences = [];
 let multdiv = [];
-
+console.log(multdiv);
+let firstNumber;
+let secondNumber;
+let result;
+let result2;
 
 function multDivOperation(x) {
-      
 
-  
-  // get one's to find consecutiveness of multiplication & division
+  differences = [];
 
-for (let j = 0; j< x.length-1; j++) {
-  differences.push(x[j+1] - x[j]);
+  for (let j = 0; j< x.length-1; j++) {
+    
+    differences.push(x[j+1] - x[j]);
+    
 }
 
-  let firstNumber;
-  let secondNumber;
-  let result;
-  let result2;
-  let i;
 
+      
 // if there is only one number in the array of indices of signs and zero in the differences
    
   if (x[0] >= 0 && differences.length == 0) {
@@ -269,48 +247,71 @@ for (let j = 0; j< x.length-1; j++) {
     }
  
  
- for (i = 0; i <= differences.length; i++) {
+ for (let i = 0; i <= differences.length; i++) {
 
 // multiplying any nonconsecutive number
-   
- if (differences[i] > 1) {  
-    if ( (differences[i-1] > 1 && differences[i+1] == 1) ||
-       (differences[i-1] == undefined && differences[i+1] ==
-       undefined) || (differences[i-1] == undefined &&
-       differences[i+1] >= 1) || (differences[i-1] >= 1 &&
-       differences[i+1] == undefined) ||  (differences[i-1] > 1 &&
-       differences[i+1] > 1) ) {
+ 
+if (differences[i] > 1) {  
+  if ((differences[i-1] == undefined && differences[i+1] == undefined) || (differences[i-1] == undefined && differences[i+1] > 1)  ) {
  
       if (operatorSigns[x[i]] == '*') {
-         firstNumber =  numeros[x[i]] *
-                        numeros[x[i]+1];
-        multdiv.push(firstNumber);
-       // console.log(firstNumber);
-      } if (operatorSigns[x[i]] == '/') {
-         firstNumber =  numeros[x[i]] /
-                        numeros[x[i]+1];
-        multdiv.push(firstNumber);
+          firstNumber =  numeros[x[i]] *
+                         numeros[x[i]+1];
+         multdiv.push(firstNumber);
         // console.log(firstNumber);
-      }
- 
- if (((differences[i-1] > 1 || differences[i-1] == undefined) &&
-     differences[i+1] == undefined)) {  
- 
-    if (operatorSigns[x[i+1]] == '*') {
-         secondNumber =  numeros[x[i+1]] *
-                        numeros[x[i+1]+1];
-        multdiv.push(secondNumber);
+       } if (operatorSigns[x[i]] == '/') {
+          firstNumber =  numeros[x[i]] /
+                         numeros[x[i]+1];
+         multdiv.push(firstNumber);
+        //  console.log(firstNumber);
+       }
+  
+      if (operatorSigns[x[i+1]] == '*') {
+          secondNumber =  numeros[x[i+1]] *
+                         numeros[x[i+1]+1];
+         multdiv.push(secondNumber);
        // console.log(secondNumber);
-      } if (operatorSigns[x[i+1]] == '/') {
-         secondNumber =  numeros[x[i+1]] /
-                        numeros[x[i+1]+1];
-        multdiv.push(secondNumber);
-       // console.log(secondNumber);
-      }
+       } if (operatorSigns[x[i+1]] == '/') {
+          secondNumber =  numeros[x[i+1]] /
+                         numeros[x[i+1]+1];
+         multdiv.push(secondNumber);
+         //console.log(secondNumber);
+       }
      }
  
+  
+    if ((differences[i-1] >= 1 && differences[i+1] == undefined) ||
+      (differences[i-1] > 1 && differences[i+1] > 1)) {
+      
+        if (operatorSigns[x[i+1]] == '*') {
+          secondNumber =  numeros[x[i+1]] *
+                         numeros[x[i+1]+1];
+         multdiv.push(secondNumber);
+       // console.log(secondNumber);
+       } if (operatorSigns[x[i+1]] == '/') {
+          secondNumber =  numeros[x[i+1]] /
+                         numeros[x[i+1]+1];
+         multdiv.push(secondNumber);
+        // console.log(secondNumber);
+       }
     }
+ 
+   if ((differences[i-1] == undefined && differences[i+1] == 1) || (differences[i-1] == 1 && differences[i+1] > 1)) {
+       if (operatorSigns[x[i]] == '*') {
+          firstNumber =  numeros[x[i]] *
+                         numeros[x[i]+1];
+         multdiv.push(firstNumber);
+        // console.log(firstNumber);
+       } if (operatorSigns[x[i]] == '/') {
+          firstNumber =  numeros[x[i]] /
+                         numeros[x[i]+1];
+         multdiv.push(firstNumber);
+        //  console.log(firstNumber);
+       }
    }
+    }
+
+
  
 // dealing with streaks of ones (consecutive multiplications or divisions), get the first 3 numbers (multiply or divide) and save it to result2
        
@@ -420,44 +421,23 @@ for (let j = 0; j< x.length-1; j++) {
 
 // this is to find the index positions of + and -
 
-const elementPlus = '+';
-const elementNegative = '-';
-let idp;
-let idMin;
-
-
 let indicesOfminusplusSigns = [];
 
 
-function signsOrder2(array2) {
-
-
-  idp = array2.indexOf(elementPlus);
-  idMin = array2.indexOf(elementNegative);
-
-  for(let i = 0; i < array2.length;i++) {  
-  if (idp !== -1) {
-    indicesOfminusplusSigns.push(idp);
-    idp = array2.indexOf(elementPlus, idp + 1);
-   
-   }
-    if (idMin !== -1) {
-    indicesOfminusplusSigns.push(idMin);
-    idMin = array2.indexOf(elementNegative, idMin + 1);
-     
-   }
-  }
- 
+function signsOrder2(array2, array3){  
+  for(let i =0; i < array3.length-1; ++i) {
+     if (array2[i] === '+' || array2[i] === '-'){
+      indicesOfminusplusSigns.push(i);
+    }   
+  }     
 };
-
-
 
 
 let addminresult = 0;
 let addminus = [];
 console.log(addminus);
 
-function addSubtractOperation(z) {
+function addSubtractOperation(a) {
 
   if (operatorSigns != null) {
   
@@ -510,15 +490,15 @@ function addSubtractOperation(z) {
   // if there is more than one + or - in the array (streaks):
    
   if (operatorSigns.length > 1) {
-  for(let i = 1; i <= z.length;i++) {
+  for(let i = 1; i <= a.length; i++) {
  
      if (operatorSigns[i] === '+') {
             addminresult =  (addminresult +
-            numeros[z[i]+1]);
+            numeros[a[i]+1]);
            console.log(addminresult);
      } if (operatorSigns[i]  === '-') {
             addminresult = (addminresult +                          
-            numeros[z[i]+1]);
+            numeros[a[i]+1]);
            //console.log(addminresult);  
       }
    }  
@@ -552,25 +532,36 @@ function totalreturn() {
   }
 }
 
+//Function to reset individual outputs to recalculate when new inputs are added:
 
   function reset1() {
     indicesOfSigns.length = 0;
-    differences.length = 0;
     multdiv.length = 0;
     indicesOfminusplusSigns.length = 0;
     addminus.length = 0;
+    addminresult = 0;
+    
   }
 
-  
+  //Function to reset everything:
 
   function resetall() {
     accumulatedVal.length = 0;
     subDisplay2.value = 0; 
     subDisplay1.innerHTML = '';
+    subDisplay2.style.color = 'black';
+    subDisplay1.style.fontSize = '30px';
   }
 
  
+//Function for button equal
 
-
+function equalTotal() {
+  
+  subDisplay1.innerHTML = total.toFixed(10); 
+  subDisplay2.value = ''; 
+  subDisplay1.style.color = 'black';
+  subDisplay1.style.fontSize = '60px';
+}
 
 

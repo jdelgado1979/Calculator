@@ -48,7 +48,7 @@ body {
         text-align: right;
         line-height: 80px;
         padding-inline-end: 5px;
-        font-size: 35px;
+        font-size: 30px;
 
     }
 
@@ -58,7 +58,9 @@ body {
         text-align: right;
         line-height: 110px;
         padding-inline-end: 5px;
-        font-size: 55px;
+        font-size: 60px;
+        border: none;
+        background-color: hsl(120, 100%, 90%);
     }
 
     .mainButtons {
