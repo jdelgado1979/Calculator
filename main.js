@@ -49,7 +49,8 @@ buttonSubtract.addEventListener('click', printSymbol);
 buttonAdd.addEventListener('click', printSymbol);
 buttonC.addEventListener('click', resetall);
 buttonEqual.addEventListener('click', equalTotal);
-//buttonPercent.addEventListener('click', percentNum);
+buttonPercent.addEventListener('click', percentNum);
+buttonMinusPlus.addEventListener('click',addnegative);
 
 const regex = /(\-)?[0-9]*(\.)?[0-9]+/g;
 const regex2 = /(\+)|(\-)|(\*)|(\/)/g;
@@ -61,9 +62,10 @@ const regex5 = /^(\-)?[0-9]*(\.)?[0-9]+[\W]$/;
 let text;
 let operatorSigns;
 let stringNumbers;
-let numeros;
+let numeros = [];
 let accumulatedVal = [];
 let accumulatedSym = [];
+let num2;
 
 // Functions to input numbers and operators into the display
 
@@ -71,21 +73,26 @@ let accumulatedSym = [];
 
 function printNumber (e) {
  
-  
+  console.log(typeof(num2));
     const str = e.target.firstChild.nodeValue;
     let num = parseInt(str);
+    
     console.log(num);
-    if (subDisplay1.innerHTML !== total) {
+    if (subDisplay1.innerHTML !== total && subDisplay1.innerHTML !== num2) {
       var y = document.createTextNode(str); 
       subDisplay1.appendChild(y); 
       accumulatedVal.push(num);
+      console.log(accumulatedVal);
+      
       subDisplay2.value = num;
       subDisplay2.style.color = 'hsl(0, 0%, 67%)';
-      text = accumulatedVal.join('')
+      text = accumulatedVal.join('');
       showcaseOutput(text);
     }
-    
 
+    console.log(total);
+
+    console.log(numeros);
     }
    
     
@@ -99,7 +106,7 @@ function printNumber (e) {
     let testValue2 = parseInt(accumulatedVal[accumulatedVal.length - 1]);
     let testValue3 = accumulatedSym[0];
         
-    if (((testValue>=0) && (testValue2>=0) || (testValue3 == '.')) ) {
+    if (((testValue) && (testValue2) || (testValue3 == '.')) ) {
       var y = document.createTextNode(str);  
       subDisplay1.appendChild(y); 
       accumulatedVal.push(str);
@@ -115,56 +122,120 @@ function printNumber (e) {
        
     const str = e.target.firstChild.nodeValue;
     let testValue4 = accumulatedSym[accumulatedSym.length - 1];
-          
-    if ( (accumulatedSym.length == 0) || (testValue4 == '+' || testValue4 == '-' || testValue4 == '*' || testValue4 == '/') && (subDisplay1.innerHTML !== total))  {
-      var y = document.createTextNode(str);  
-      subDisplay1.appendChild(y); 
-      accumulatedVal.push(str);
-      accumulatedSym.push(str);
-      
+    let testValue5 = numeros[numeros.length - 1];
+     
+    if ((accumulatedSym.length == 0) || (testValue4 == '+' || testValue4 == '-' || testValue4 == '*' || testValue4 == '/' ) 
+    && (subDisplay1.innerHTML !== total) )  {
+      if ((numeros[numeros.length-1] !== parseFloat(num2))) {
+        var y = document.createTextNode(str);  
+        subDisplay1.appendChild(y); 
+        accumulatedVal.push(str);
+        accumulatedSym.push(str);
+      }
     } else return;  
-
-           
-     } 
+   } 
 
 
  //Function for percentage
 
- 
- /*
- 
+  function percentNum () {
 
- function percentNum () {
+    if (subDisplay2.value == subDisplay2.defaultValue || subDisplay2.value == num2 || subDisplay2.value == total || subDisplay2.value == ''){
+      return;
+    }
+
 
  let text = subDisplay1.innerHTML;
- let resulta = regex.exec(text);
+ let num = parseInt(text);
  
+ num = num % 1;
+  
+  if(num == 0){
+    num2 = (subDisplay2.value/100).toFixed(2);
+  } else {
+    num2 = (subDisplay2.value/100).toFixed(10);
+  }
 
-  if(subDisplay2.value != null && (resulta == null)){
-    subDisplay1.innerHTML = (subDisplay2.value/100).toFixed(2);
-    subDisplay1.style.color = 'black';
-    subDisplay1.style.fontSize = '60px';
-    subDisplay2.value = ''; 
-  } else return; 
+  if(subDisplay2.value != null ){ 
+    if (numeros[numeros.length-1]) {
+     numeros.pop(numeros[numeros.length-1]);
+     numeros.push(num2); 
+    }
+     subDisplay1.innerHTML = num2; 
+     subDisplay1.style.color = 'black';
+     subDisplay1.style.fontSize = '60px';
+     accumulatedVal.length = 0; 
+     accumulatedVal.push(num2);
+     subDisplay2.style.color = 'hsl(0, 0%, 67%)';
+     subDisplay2.value = num2; 
+     text = accumulatedVal.join('');
+     showcaseOutput(text);
+    } 
+  
+  } 
 
- }
- */
+  // Function to convert a positive number to negative and viceversa
 
+  function addnegative() {
+    if (subDisplay2.value == subDisplay2.defaultValue || subDisplay2.value == ''){
+      return;
+    }
+
+    let text = subDisplay1.innerHTML;
+    let num = parseInt(text);
+     num = num*(-1);
+    if(subDisplay2.value != null ){ 
+     
+      if (numeros[numeros.length-1]) {
+       numeros.pop(numeros[numeros.length-1]);
+       numeros.push(num); 
+       console.log(numeros);
+      }
+      console.log(accumulatedVal);
+       subDisplay1.innerHTML = num; 
+       subDisplay1.style.color = 'black';
+       subDisplay1.style.fontSize = '60px';
+       cutAndReplace(accumulatedVal,num);
+       console.log(accumulatedVal);
+       subDisplay2.style.color = 'hsl(0, 0%, 67%)';
+       subDisplay2.value = num; 
+       text = accumulatedVal.join('');
+       showcaseOutput(text);
+      } 
+
+  }
+
+  function cutAndReplace(array,x) {
+    for(let i = array.length-1; i >= 0; i--){
+      if(typeof(array[i]) == 'number' || array[i] == '.') {
+        array.pop();
+      } if(array[i]== '-' || array[i]== '*' || array[i]== '/' || array[i]== '+' || array.length == 0) 
+      {
+       array.push(x);
+       break;
+      }
+    }
+    return array;
+  }
+
+ 
 //Function to obtain input and print output in the second screen 
 
 
 let resultx;
-let resulty;
-     
+let resulty;     
   
   function showcaseOutput (a) {
    
     resultx = regex.exec(a);
     resulty = regex4.exec(a);
     let num;
+    console.log(resultx);
+    console.log(resulty);
     if (resultx) {
-      num = resultx.input;
+      num = parseFloat(resultx.input);
       subDisplay2.value = num;
+      numeros.push(num);
     } 
       
 
@@ -527,7 +598,7 @@ function addSubtractOperation(a) {
 
 // Function that returns the total outcome
 
-let total = 0.0;
+let total = 0;
 let totalarr;
 function totalreturn() {
   let num;
@@ -602,6 +673,7 @@ function equalTotal() {
   subDisplay1.style.fontSize = '60px';
 
    } 
+   
  }
 
 
