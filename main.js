@@ -52,11 +52,6 @@ buttonEqual.addEventListener('click', equalTotal);
 buttonPercent.addEventListener('click', percentNum);
 buttonMinusPlus.addEventListener('click',addnegative);
 
-const regex = /(\-)?[0-9]*(\.)?[0-9]+/g;
-const regex2 = /(\+)|(\-)|(\*)|(\/)/g;
-const regex3 = /^[0-9]+(\.[0-9]+)[\W][0-9]+((\.)[0-9]+)?$/;
-const regex4 = /^[0-9]*(\.)?[0-9]*[\W][0-9]*(\.)?[0-9]*([\W][0-9]*(\.)?[0-9]+)*$/;
-const regex5 = /^(\-)?[0-9]*(\.)?[0-9]+[\W]$/;
 
 
 let text;
@@ -73,26 +68,23 @@ let num2;
 
 function printNumber (e) {
  
-  console.log(typeof(num2));
+  
     const str = e.target.firstChild.nodeValue;
     let num = parseInt(str);
     
-    console.log(num);
     if (subDisplay1.innerHTML !== total && subDisplay1.innerHTML !== num2) {
       var y = document.createTextNode(str); 
       subDisplay1.appendChild(y); 
       accumulatedVal.push(num);
       console.log(accumulatedVal);
-      
+      console.log(numeros);
       subDisplay2.value = num;
       subDisplay2.style.color = 'hsl(0, 0%, 67%)';
       text = accumulatedVal.join('');
       showcaseOutput(text);
     }
 
-    console.log(total);
-
-    console.log(numeros);
+ 
     }
    
     
@@ -180,30 +172,34 @@ function printNumber (e) {
     if (subDisplay2.value == subDisplay2.defaultValue || subDisplay2.value == ''){
       return;
     }
-
+    
     let text = subDisplay1.innerHTML;
-    let num = parseInt(text);
-     num = num*(-1);
-    if(subDisplay2.value != null ){ 
+    let num;
      
-      if (numeros[numeros.length-1]) {
-       numeros.pop(numeros[numeros.length-1]);
-       numeros.push(num); 
-       console.log(numeros);
-      }
-      console.log(accumulatedVal);
-       subDisplay1.innerHTML = num; 
-       subDisplay1.style.color = 'black';
-       subDisplay1.style.fontSize = '60px';
-       cutAndReplace(accumulatedVal,num);
-       console.log(accumulatedVal);
+     if (accumulatedSym[accumulatedSym.length-1] == '*' || accumulatedSym[accumulatedSym.length-1] == '/' || accumulatedSym[accumulatedSym.length-1] == '+'|| 
+      accumulatedVal.length == 1){
+      num = parseInt(cutlastnumber(text));
+      num = num*(-1);
+      cutAndReplace(accumulatedVal,num);
+     } else if (accumulatedSym[accumulatedSym.length-1] == '-'){
+      num = parseInt(cutlastnumber(text));
+      changeMinustoPlusArray(accumulatedVal);
+     }
+    
+    if(subDisplay2.value != null ){ 
+   
        subDisplay2.style.color = 'hsl(0, 0%, 67%)';
        subDisplay2.value = num; 
        text = accumulatedVal.join('');
+       console.log(text);
+       subDisplay1.innerHTML = text; 
        showcaseOutput(text);
       } 
 
   }
+
+ 
+  //Function to cut the last number of an array and replace it with the negative number
 
   function cutAndReplace(array,x) {
     for(let i = array.length-1; i >= 0; i--){
@@ -218,9 +214,46 @@ function printNumber (e) {
     return array;
   }
 
+  // Function to obtain the last number of the input
+
+  function cutlastnumber(a) {
+    let num = [];
+    let num2 = [];
+    let array = a.split('');
+      for(let i = array.length-1; i >= 0; i--){
+         
+         if(array[i] === '-' || array[i] === '*' || array[i] === '/' || array[i] === '+' || array.length === 0) {
+           break;
+         } else {
+           num.push(array[i]);
+         } 
+      }
+    
+    for(i = array.length-1; i >= 0; i--){
+      num2.push(num[i]);
+    }
+    
+    return num2.join('');
+  }
+
+  //Function to change minus to plus when two minuses are placed
+
+  function changeMinustoPlusArray(array) {
+   
+    for(let i = array.length-1; i >= 0; i--){
+          
+       if(array[i] === '-') {
+         array[i] = '+'
+         break;
+       } 
+    }
+  return array;
+}
+
  
 //Function to obtain input and print output in the second screen 
-
+const regex = /(\-)?[0-9]*(\.)?[0-9]+/g;
+const regex2 = /^[0-9]*(\.)?[0-9]*[\W](\-)?[0-9]*(\.)?[0-9]*([\W](\-)?[0-9]*(\.)?[0-9]+)*$/;
 
 let resultx;
 let resulty;     
@@ -228,10 +261,10 @@ let resulty;
   function showcaseOutput (a) {
    
     resultx = regex.exec(a);
-    resulty = regex4.exec(a);
+    resulty = regex2.exec(a);
     let num;
-    console.log(resultx);
-    console.log(resulty);
+    //console.log(resultx);
+    //console.log(resulty);
     if (resultx) {
       num = parseFloat(resultx.input);
       subDisplay2.value = num;
@@ -240,10 +273,21 @@ let resulty;
       
 
    if (resulty) {
-   
-      operatorSigns = resulty[0].match(regex2);
+
+       operatorSigns = [];
+             
       stringNumbers = resulty[0].match(regex);
       numeros = stringNumbers.map(Number);
+
+    
+      // if sign push it
+      for(let i = 0; i < accumulatedVal.length; i++){
+        if(accumulatedVal[i] == '/' || accumulatedVal[i] == '*' || accumulatedVal[i] == '-' || accumulatedVal[i] == '+'){
+          operatorSigns.push(accumulatedVal[i]);
+        }
+      }
+
+
       if (numeros.length == 1) {
         let numi = numeros[0];
         subDisplay2.value = numi;
@@ -251,12 +295,23 @@ let resulty;
       } 
       signsOrder(operatorSigns, stringNumbers);
       multDivOperation(indicesOfSigns);
+      console.log(operatorSigns);
+      console.log(stringNumbers);
+      console.log(accumulatedVal);
+      console.log(accumulatedSym);
+      console.log(numeros);
+      console.log(indicesOfminusplusSigns);  
+      console.log(addminresult);  
+      console.log(operatorSigns.length);  
+      console.log(operatorSigns); 
+
       
       signsOrder2(operatorSigns, stringNumbers);
       addSubtractOperation(indicesOfminusplusSigns);
 
       totalreturn(); 
       subDisplay2.value = total;
+      //console.log(total);
       }
     
      reset1();
@@ -291,15 +346,15 @@ let differences;
 // function to multiply and divide numbers in the calculator
 
 let multdiv = [];
-console.log(multdiv);
 let firstNumber;
 let secondNumber;
 let result;
-let result2;
+let result2 =0;
 
 function multDivOperation(x) {
 
   differences = [];
+  
 
   for (let j = 0; j< x.length-1; j++) {
     
@@ -310,29 +365,30 @@ function multDivOperation(x) {
 
       
 // if there is only one number in the array of indices of signs and zero in the differences
+
+if (x[0] >= 0 && differences.length == 0) {
    
-  if (x[0] >= 0 && differences.length == 0) {
-   
-     if (operatorSigns[x[0]] === '*') {
-      result = numeros[x[0]] *
-      numeros[x[0]+1];
-      multdiv.push(result);
-     
-    }
-   
-     if (operatorSigns[x[0]] === '/') {
-      result = numeros[x[0]] /
-      numeros[x[0]+1];
-      multdiv.push(result);
-     
-     }
-    }
- 
+  if (operatorSigns[x[0]] === '*') {
+   result = numeros[x[0]] *
+   numeros[x[0]+1];
+   multdiv.push(result);
+  
+ }
+
+  if (operatorSigns[x[0]] === '/') {
+   result = numeros[x[0]] /
+   numeros[x[0]+1];
+   multdiv.push(result);
+  
+  }
+ }
+
+
  
  for (let i = 0; i <= differences.length; i++) {
 
 // multiplying any nonconsecutive number
- 
+
 if (differences[i] > 1) {  
   if ((differences[i-1] == undefined && differences[i+1] == undefined) || (differences[i-1] == undefined && differences[i+1] > 1)  ) {
  
@@ -393,77 +449,76 @@ if (differences[i] > 1) {
    }
     }
 
-
- 
 // dealing with streaks of ones (consecutive multiplications or divisions), get the first 3 numbers (multiply or divide) and save it to result2
        
- if( (differences[i] === 1) && ((differences[i-1] > 1) ||
-    (differences[i-1] == undefined)) && (differences[i+1] == 1 ) )
-       {
+if( (differences[i] === 1) && ((differences[i-1] > 1) ||
+(differences[i-1] == undefined)) && (differences[i+1] == 1 ) )
+   {
+ 
+    if (operatorSigns[x[i]] === '*'){
+     result2 = numeros[x[i]] *
+             numeros[x[i]+1];
+    //  console.log(result2);
+    if (operatorSigns[x[i+1]] === '*'){
+      result2 = result2 * numeros[x[i]+2];
+    //  console.log(result2);
+    } else if (operatorSigns[x[i+1]] === '/'){
+      result2 = result2 / numeros[x[i]+2];
+    //  console.log(result2);
+    }
      
-        if (operatorSigns[x[i]] === '*'){
-         result2 = numeros[x[i]] *
-                 numeros[x[i]+1];
-        //  console.log(result2);
-        if (operatorSigns[x[i+1]] === '*'){
-          result2 = result2 * numeros[x[i]+2];
-        //  console.log(result2);
-        } else if (operatorSigns[x[i+1]] === '/'){
-          result2 = result2 / numeros[x[i]+2];
-        //  console.log(result2);
-        }
-         
-        } else if (operatorSigns[x[i]] === '/') {
-         result2 = numeros[x[i]] /
-                 numeros[x[i]+1];
-          //console.log(result2);
-        if (operatorSigns[x[i+1]] === '/'){
-          result2 = result2 / numeros[x[i]+2];
-          //console.log(result2);
-        }  else if (operatorSigns[x[i+1]] === '*'){
-          result2 = result2 * numeros[x[i]+2];
-         // console.log(result2);
-        }
-      }
-     }    
-       
-   // get the rest of the one's(numbers) to multiply or divide  and save it to result2
-       
-   if ((differences[i] == 1) && (differences[i-1] == 1) &&
-        (differences[i+1] == 1)) {
-     
-        if (operatorSigns[x[i+1]] === '*'){
-          result2 =
-          result2 * numeros[x[i+1]+1];
-         //  console.log(result2);  
-         } else if (operatorSigns[x[i+1]] === '/'){
-         result2 =
-          result2 / numeros[x[i+1]+1];
-         // console.log(result2);  
-        }
-      }
-       
-  // get the last of the one's(numbers) to multiply or divide  and push result2 to main array
-       
-  if((differences[i] === 1) && ((differences[i+1] > 1) ||
-     (differences[i+1] == undefined)) && (differences[i-1] == 1 ) )
-       {
-         if (operatorSigns[x[i+1]] === '*'){
-          result2 =
-          result2 * numeros[x[i+1]+1];
-           multdiv.push(result2);
-           //console.log(result2);  
-         } else if (operatorSigns[x[i+1]] === '/'){
-         result2 =
-          result2 / numeros[x[i+1]+1];
-           multdiv.push(result2);
-          // console.log(result2);  
-        }
-       }
-       
+    } else if (operatorSigns[x[i]] === '/') {
+     result2 = numeros[x[i]] /
+             numeros[x[i]+1];
+      //console.log(result2);
+    if (operatorSigns[x[i+1]] === '/'){
+      result2 = result2 / numeros[x[i]+2];
+      //console.log(result2);
+    }  else if (operatorSigns[x[i+1]] === '*'){
+      result2 = result2 * numeros[x[i]+2];
+     // console.log(result2);
+    }
+  }
+ }    
+   
+// get the rest of the one's(numbers) to multiply or divide  and save it to result2
+   
+if ((differences[i] == 1) && (differences[i-1] == 1) &&
+    (differences[i+1] == 1)) {
+ 
+    if (operatorSigns[x[i+1]] === '*'){
+      result2 =
+      result2 * numeros[x[i+1]+1];
+     //  console.log(result2);  
+     } else if (operatorSigns[x[i+1]] === '/'){
+     result2 =
+      result2 / numeros[x[i+1]+1];
+     // console.log(result2);  
+    }
+  }
+   
+// get the last of the one's(numbers) to multiply or divide  and push result2 to main array
+   
+if((differences[i] === 1) && ((differences[i+1] > 1) ||
+ (differences[i+1] == undefined)) && (differences[i-1] == 1 ) )
+   {
+     if (operatorSigns[x[i+1]] === '*'){
+      result2 =
+      result2 * numeros[x[i+1]+1];
+       multdiv.push(result2);
+       //console.log(result2);  
+     } else if (operatorSigns[x[i+1]] === '/'){
+     result2 =
+      result2 / numeros[x[i+1]+1];
+       multdiv.push(result2);
+      // console.log(result2);  
+    }
+   }
+
+      
 // dealing with singles (not streaks of ones),  get the first 3 numbers (multiply or divide) and push it
-       
-    if((differences[i] === 1) && ((differences[i-1] > 1) || (differences[i-1] == undefined)) && ((differences[i+1] > 1) || (differences[i+1] == undefined)) )
+
+if((differences[i] === 1) && ((differences[i-1] > 1) || (differences[i-1] == undefined)) && ((differences[i+1] > 1) || (differences[i+1] == undefined)) )
        {
      
         if (operatorSigns[x[i]] === '*'){
@@ -497,7 +552,6 @@ if (differences[i] > 1) {
     }
    
   }
-
   
 
 
@@ -517,9 +571,10 @@ function signsOrder2(array2, array3){
 
 let addminresult = 0;
 let addminus = [];
-console.log(addminus);
+
 
 function addSubtractOperation(a) {
+
 
   if (operatorSigns != null) {
   
@@ -527,28 +582,28 @@ function addSubtractOperation(a) {
 
   // If there is any * or / sign, find the numbers that are only being added or subtracted that are independent of these operations
 
+
   if (multdiv.length >= 1) {
    
- for(let k = 0; k < operatorSigns.length; k++) {      
- if ((operatorSigns[k-1] === undefined && operatorSigns[k] === '+')    || (operatorSigns[k-1] === undefined && operatorSigns[k] === '-'))       {
-      addminus.push(numeros[k]);
-    }
-   
-   if ((operatorSigns[k] === '+' && operatorSigns[k+1] === '+') ||
-      (operatorSigns[k] === '-' && operatorSigns[k+1] === '-') ||
-       (operatorSigns[k] === '-' && operatorSigns[k+1] === '+') ||
-      (operatorSigns[k] === '+' && operatorSigns[k+1] === '-')) {
-            addminus.push(numeros[k+1]);
-           
- } if ((operatorSigns[k] === '+' && operatorSigns[k+1] === undefined)   || (operatorSigns[k] === '-' && operatorSigns[k+1] ===
-      undefined)) {
-            addminus.push(numeros[k+1]);
+    for(let k = 0; k < operatorSigns.length; k++) {      
+    if ((operatorSigns[k-1] === undefined && operatorSigns[k] === '+')    || (operatorSigns[k-1] === undefined && operatorSigns[k] === '-'))       {
+         addminus.push(numeros[k]);
+       }
+      
+      if ((operatorSigns[k] === '+' && operatorSigns[k+1] === '+') ||
+         (operatorSigns[k] === '-' && operatorSigns[k+1] === '-') ||
+          (operatorSigns[k] === '-' && operatorSigns[k+1] === '+') ||
+         (operatorSigns[k] === '+' && operatorSigns[k+1] === '-')) {
+               addminus.push(numeros[k+1]);
+              
+    } if ((operatorSigns[k] === '+' && operatorSigns[k+1] === undefined)   || (operatorSigns[k] === '-' && operatorSigns[k+1] ===
+         undefined)) {
+               addminus.push(numeros[k+1]);
+         }
+       }
       }
-    }
-   }
 
-   
- //console.log(addminus);
+  
  
   // Do this only if there are no * or / , meaning we are only adding or subtracting:
  
@@ -560,11 +615,11 @@ function addSubtractOperation(a) {
    if (operatorSigns[0] === '+') {
       addminresult =  (numeros[0] +
       numeros[1]);
-      //console.log(addminresult);
+      console.log(addminresult);
    } if (operatorSigns[0]  === '-') {
      addminresult = (numeros[0] +
       numeros[1]);
-      //console.log(addminresult);
+      console.log(addminresult);
    }
                  
   }
@@ -579,9 +634,9 @@ function addSubtractOperation(a) {
             numeros[a[i]+1]);
            console.log(addminresult);
      } if (operatorSigns[i]  === '-') {
-            addminresult = (addminresult +                          
+            addminresult = (addminresult +                        
             numeros[a[i]+1]);
-           //console.log(addminresult);  
+            console.log(addminresult);
       }
    }  
      
@@ -592,11 +647,7 @@ function addSubtractOperation(a) {
   }
 
 
-
-//console.log(addminus);
-//console.log(addminresult);
-
-// Function that returns the total outcome
+  // Function that returns the total outcome
 
 let total = 0;
 let totalarr;
@@ -611,7 +662,9 @@ function totalreturn() {
     } else {
       total = total.toFixed(10); 
      } 
-    console.log(total);
+     console.log(addminus);
+     console.log(multdiv);
+     console.log(total);
   } if (addminus.length == 0 && multdiv.length >= 1){
     total = multdiv.reduce((a,b) => a + b);
     num = total % 1;
@@ -620,6 +673,7 @@ function totalreturn() {
     } else {
       total = total.toFixed(10); 
      } 
+     console.log(multdiv);
     console.log(total);
   } if (addminus.length == 1 && multdiv.length == 0){
      total = addminresult;
