@@ -51,7 +51,7 @@ buttonC.addEventListener('click', resetall);
 buttonEqual.addEventListener('click', equalTotal);
 buttonPercent.addEventListener('click', percentNum);
 buttonMinusPlus.addEventListener('click',addnegative);
-
+buttonBackspace.addEventListener('click',backSpace);
 
 
 let text;
@@ -62,7 +62,7 @@ let accumulatedVal = [];
 let accumulatedSym = [];
 let num2;
 
-// Functions to input numbers and operators into the display
+// FUNCTIONS TO INPUT NUMBERS AND OPERATORS INTO THE DISPLAY
 
 //Function to input numbers
 
@@ -76,16 +76,12 @@ function printNumber (e) {
       var y = document.createTextNode(str); 
       subDisplay1.appendChild(y); 
       accumulatedVal.push(num);
-      console.log(accumulatedVal);
-      console.log(numeros);
       subDisplay2.value = num;
       subDisplay2.style.color = 'hsl(0, 0%, 67%)';
       text = accumulatedVal.join('');
       showcaseOutput(text);
     }
-
- 
-    }
+   }
    
     
 
@@ -172,18 +168,43 @@ function printNumber (e) {
     if (subDisplay2.value == subDisplay2.defaultValue || subDisplay2.value == ''){
       return;
     }
+
+    if(((accumulatedSym[accumulatedSym.length-1] == '*' || accumulatedSym[accumulatedSym.length-1] == '/' || accumulatedSym[accumulatedSym.length-1] == '-'|| 
+    accumulatedSym[accumulatedSym.length-1] == '+') && (accumulatedVal[accumulatedVal.length-1] == '*' || accumulatedVal[accumulatedVal.length-1] == '/' || accumulatedVal[accumulatedVal.length-1] == '+'|| 
+    accumulatedVal[accumulatedVal.length-1] == '-'))) {
+      return;
+    }
+
+    if(newText != null){
+
+      if(newText[newText.length-1] == '-' && (newText[newText.length-2] == '*' || 
+      newText[newText.length-2] == '/' || newText[newText.length-2] == '+' )) {
+        return;
+      }
+     
+    }
     
     let text = subDisplay1.innerHTML;
     let num;
-     
-     if (accumulatedSym[accumulatedSym.length-1] == '*' || accumulatedSym[accumulatedSym.length-1] == '/' || accumulatedSym[accumulatedSym.length-1] == '+'|| 
-      accumulatedVal.length == 1){
+     console.log(accumulatedSym);
+     if (accumulatedVal.length >= 1 && accumulatedSym.length == 0){
+     num = parseInt(cutlastnumber(text));
+     num = num*(-1);
+     console.log(num);
+     cutAndReplace(accumulatedVal,num);
+     } else if (accumulatedSym[accumulatedSym.length-1] == '*' || accumulatedSym[accumulatedSym.length-1] == '/' || accumulatedSym[accumulatedSym.length-1] == '+' && 
+     accumulatedVal.length > 1){
       num = parseInt(cutlastnumber(text));
       num = num*(-1);
+      console.log(num);
       cutAndReplace(accumulatedVal,num);
-     } else if (accumulatedSym[accumulatedSym.length-1] == '-'){
+     } else if (accumulatedSym[accumulatedSym.length-1] == '-'  && 
+     accumulatedVal.length > 1){
       num = parseInt(cutlastnumber(text));
+      console.log(num);
       changeMinustoPlusArray(accumulatedVal);
+     } else if (accumulatedSym[accumulatedSym.length-1] == '.' && accumulatedVal.length >= 1){
+       cutAndReplace(accumulatedVal,cutlastnumber(text));
      }
     
     if(subDisplay2.value != null ){ 
@@ -202,13 +223,26 @@ function printNumber (e) {
   //Function to cut the last number of an array and replace it with the negative number
 
   function cutAndReplace(array,x) {
+   
+    console.log(x);
+    console.log(typeof(x));
     for(let i = array.length-1; i >= 0; i--){
       if(typeof(array[i]) == 'number' || array[i] == '.') {
         array.pop();
       } if(array[i]== '-' || array[i]== '*' || array[i]== '/' || array[i]== '+' || array.length == 0) 
       {
-       array.push(x);
-       break;
+        if(x <1 && x>0 || accumulatedSym[accumulatedSym.length-1] == '.') {
+          array.push(-x);
+          console.log(typeof(x));
+          console.log(accumulatedVal);
+          break;
+        } else {
+          console.log(typeof(x));
+          console.log(accumulatedVal);
+          array.push(x);
+          break;
+        }
+       
       }
     }
     return array;
@@ -232,8 +266,9 @@ function printNumber (e) {
     for(i = array.length-1; i >= 0; i--){
       num2.push(num[i]);
     }
+    num2 = num2.join('');
     
-    return num2.join('');
+    return num2;
   }
 
   //Function to change minus to plus when two minuses are placed
@@ -253,7 +288,7 @@ function printNumber (e) {
  
 //Function to obtain input and print output in the second screen 
 const regex = /(\-)?[0-9]*(\.)?[0-9]+/g;
-const regex2 = /^[0-9]*(\.)?[0-9]*[\W](\-)?[0-9]*(\.)?[0-9]*([\W](\-)?[0-9]*(\.)?[0-9]+)*$/;
+const regex2 = /(\-)?[0-9]*(\.)?[0-9]*[\W](\-)?[0-9]*(\.)?[0-9]*([\W](\-)?[0-9]*(\.)?[0-9]+)*$/;
 
 let resultx;
 let resulty;     
@@ -295,15 +330,15 @@ let resulty;
       } 
       signsOrder(operatorSigns, stringNumbers);
       multDivOperation(indicesOfSigns);
-      console.log(operatorSigns);
-      console.log(stringNumbers);
-      console.log(accumulatedVal);
-      console.log(accumulatedSym);
-      console.log(numeros);
-      console.log(indicesOfminusplusSigns);  
-      console.log(addminresult);  
-      console.log(operatorSigns.length);  
-      console.log(operatorSigns); 
+      //console.log(operatorSigns);
+      //console.log(stringNumbers);
+      //console.log(accumulatedVal);
+      //console.log(accumulatedSym);
+      //console.log(numeros);
+      //console.log(indicesOfminusplusSigns);  
+      //console.log(addminresult);  
+      //console.log(operatorSigns.length);  
+      //console.log(operatorSigns); 
 
       
       signsOrder2(operatorSigns, stringNumbers);
@@ -317,10 +352,38 @@ let resulty;
      reset1();
      }
      
+ // Function to delete numbers and operators if mistakes are made
+ let newText;
+ function backSpace() {
  
+  if (subDisplay2.value == subDisplay2.defaultValue || subDisplay2.value == ''){
+    return;
+  }
+
+  let text = subDisplay1.innerHTML;
+  if(text.length == 1) {
+    resetall();
+  }
+  
+  if (accumulatedVal.length >= 1 && text.length > 1){ 
+    accumulatedVal.pop();
+    newText = text.split('');
+    console.log(newText);
+    newText.pop();
+    console.log(accumulatedVal);
+    subDisplay1.innerHTML = newText.join(''); 
+    subDisplay2.value = parseInt(newText);
+    subDisplay2.style.color = 'hsl(0, 0%, 67%)';
+    //subDisplay2.value = num; 
+    text = accumulatedVal.join('');
+    
+    showcaseOutput(text);
+   } 
+
+ }
 
    
-// Functions to do operations
+// FUNCTIONS TO DO OPERATIONS
 
  
 // this is to get the index positions of multiplication & division signs
