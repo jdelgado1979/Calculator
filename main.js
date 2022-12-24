@@ -60,14 +60,17 @@ let stringNumbers;
 let numeros = [];
 let accumulatedVal = [];
 let accumulatedSym = [];
-let num2;
 
-// FUNCTIONS TO INPUT NUMBERS AND OPERATORS INTO THE DISPLAY
+
+// FUNCTIONS TO INPUT NUMBERS AND OPERATORS INTO THE DISPLAY   
 
 //Function to input numbers
 
 function printNumber (e) {
  
+  if(accumulatedVal.length == 1 && accumulatedVal[0] == 0){
+    return;
+  }
   
     const str = e.target.firstChild.nodeValue;
     let num = parseInt(str);
@@ -80,27 +83,80 @@ function printNumber (e) {
       subDisplay2.style.color = 'hsl(0, 0%, 67%)';
       text = accumulatedVal.join('');
       showcaseOutput(text);
+      
     }
-   }
-   
+    if (subDisplay2.value >= 999999999){
+      subDisplay2.style.fontSize = '50px';
+    }
+    if (subDisplay2.value >= 999999999999){
+      subDisplay2.style.fontSize = '40px';
+    }
+    if (subDisplay2.value >= 999999999999999) {
+        subDisplay2.style.fontSize = '30px';
+    }
+  
+    if(accumulatedVal.length > 15) {
+     testHigherFifteen(accumulatedVal);
+     
+    if (count>=15) {
+      alert('input number has to be less than 15 digits');
+      accumulatedVal.pop();
+      console.log(accumulatedVal);
+      let firstResult = accumulatedVal.join('');
+      subDisplay1.innerHTML = firstResult;
+      let num5 = parseFloat(firstResult);
+      subDisplay2.value = num5.toExponential();
+      subDisplay2.style.color = 'hsl(0, 0%, 67%)';
+      text = accumulatedVal.join('');
+      console.log(count);
+      showcaseOutput(firstResult);
+      return;
+     
+    }
     
+    
+  }
+    
+    console.log(accumulatedVal);
+   }
 
+// Function to test for 15 digits at the end of an array
+   let count = 0;
+   function testHigherFifteen(array) {
+    
+     let i; 
+      
+      for(i = (array.length)-1; i >= 0; --i){
+       if (typeof(array[i]) == 'number'){
+        count++;
+          } 
+      if (count == 15 || array[i] == '*') {  break; }   
+      }
+      
+      return count;
+    }
+
+
+    
   //Function to input operation symbols
   
   function printSymbol (e) {
    
     const str = e.target.firstChild.nodeValue;
-    let testValue = parseInt(accumulatedVal[0]);
-    let testValue2 = parseInt(accumulatedVal[accumulatedVal.length - 1]);
-    let testValue3 = accumulatedSym[0];
-        
-    if (((testValue) && (testValue2) || (testValue3 == '.')) ) {
+    let testValue = accumulatedVal[accumulatedVal.length - 1];
+    let testValue2 = accumulatedSym[accumulatedSym.length - 1];
+         
+    if ((accumulatedVal.length == 0) || testValue == '+' || testValue == '-' || testValue == '*' || testValue == '/' || (testValue2 == '.' && testValue == '.')) { 
+      
+      return;
+    }  else {
       var y = document.createTextNode(str);  
       subDisplay1.appendChild(y); 
       accumulatedVal.push(str);
       accumulatedSym.push(str);
-      
-    } else return;
+
+    }
+   
   }
 
     
@@ -110,8 +166,7 @@ function printNumber (e) {
        
     const str = e.target.firstChild.nodeValue;
     let testValue4 = accumulatedSym[accumulatedSym.length - 1];
-    let testValue5 = numeros[numeros.length - 1];
-     
+         
     if ((accumulatedSym.length == 0) || (testValue4 == '+' || testValue4 == '-' || testValue4 == '*' || testValue4 == '/' ) 
     && (subDisplay1.innerHTML !== total) )  {
       if ((numeros[numeros.length-1] !== parseFloat(num2))) {
@@ -125,6 +180,7 @@ function printNumber (e) {
 
 
  //Function for percentage
+  let num2;
 
   function percentNum () {
 
@@ -159,7 +215,7 @@ function printNumber (e) {
      text = accumulatedVal.join('');
      showcaseOutput(text);
     } 
-  
+  console.log(accumulatedVal);
   } 
 
   // Function to convert a positive number to negative and viceversa
@@ -220,6 +276,29 @@ function printNumber (e) {
   }
 
  
+  // Function to obtain the last number of the input
+
+  function cutlastnumber(a) {
+    let num = [];
+    let num2 = [];
+    let array = a.split('');
+      for(let i = array.length-1; i >= 0; i--){
+         
+         if(array[i] === '-' || array[i] === '*' || array[i] === '/' || array[i] === '+' || array.length === 0) {
+           break;
+         } else {
+           num.push(array[i]);
+         } 
+      }
+    
+    for(i = array.length-1; i >= 0; i--){
+      num2.push(num[i]);
+    }
+    num2 = num2.join('');
+    
+    return num2;
+  }
+
   //Function to cut the last number of an array and replace it with the negative number
 
   function cutAndReplace(array,x) {
@@ -248,28 +327,6 @@ function printNumber (e) {
     return array;
   }
 
-  // Function to obtain the last number of the input
-
-  function cutlastnumber(a) {
-    let num = [];
-    let num2 = [];
-    let array = a.split('');
-      for(let i = array.length-1; i >= 0; i--){
-         
-         if(array[i] === '-' || array[i] === '*' || array[i] === '/' || array[i] === '+' || array.length === 0) {
-           break;
-         } else {
-           num.push(array[i]);
-         } 
-      }
-    
-    for(i = array.length-1; i >= 0; i--){
-      num2.push(num[i]);
-    }
-    num2 = num2.join('');
-    
-    return num2;
-  }
 
   //Function to change minus to plus when two minuses are placed
 
@@ -298,8 +355,7 @@ let resulty;
     resultx = regex.exec(a);
     resulty = regex2.exec(a);
     let num;
-    //console.log(resultx);
-    //console.log(resulty);
+    
     if (resultx) {
       num = parseFloat(resultx.input);
       subDisplay2.value = num;
@@ -313,15 +369,13 @@ let resulty;
              
       stringNumbers = resulty[0].match(regex);
       numeros = stringNumbers.map(Number);
-
-    
+        
       // if sign push it
       for(let i = 0; i < accumulatedVal.length; i++){
         if(accumulatedVal[i] == '/' || accumulatedVal[i] == '*' || accumulatedVal[i] == '-' || accumulatedVal[i] == '+'){
           operatorSigns.push(accumulatedVal[i]);
         }
       }
-
 
       if (numeros.length == 1) {
         let numi = numeros[0];
@@ -330,58 +384,186 @@ let resulty;
       } 
       signsOrder(operatorSigns, stringNumbers);
       multDivOperation(indicesOfSigns);
-      //console.log(operatorSigns);
-      //console.log(stringNumbers);
-      //console.log(accumulatedVal);
-      //console.log(accumulatedSym);
-      //console.log(numeros);
-      //console.log(indicesOfminusplusSigns);  
-      //console.log(addminresult);  
-      //console.log(operatorSigns.length);  
-      //console.log(operatorSigns); 
-
-      
+            
       signsOrder2(operatorSigns, stringNumbers);
       addSubtractOperation(indicesOfminusplusSigns);
 
       totalreturn(); 
       subDisplay2.value = total;
-      //console.log(total);
+      
       }
     
      reset1();
      }
+
      
  // Function to delete numbers and operators if mistakes are made
+
+ // Function to check if number
+
+ function isNumber(data) {
+  return (typeof data === 'number' && !isNaN(data));
+}
+
+
  let newText;
  function backSpace() {
- 
-  if (subDisplay2.value == subDisplay2.defaultValue || subDisplay2.value == ''){
-    return;
-  }
+
+  // to eliminate decimal periods by themselves
+  if (accumulatedVal[0] == '.' && accumulatedVal[accumulatedVal.length-1] == '.') {
+    resetall();
+   }
 
   let text = subDisplay1.innerHTML;
-  if(text.length == 1) {
-    resetall();
-  }
+  let text2;
+  let num3
+ 
+  // if the last value in my calculator is a number:
+
+    if (isNumber(accumulatedVal[accumulatedVal.length-1])){ 
+
+      
+// higher digit numbers (negative or positive)
+if (text.length >= 1 &&  (accumulatedVal[accumulatedVal.length-1] < -9 || accumulatedVal[accumulatedVal.length-1] > 9) ) {
+  console.log(accumulatedVal); 
   
-  if (accumulatedVal.length >= 1 && text.length > 1){ 
+  newText = text.split('');
+  //console.log(newText); 
+  newText.pop();
+  //console.log(newText); 
+  newText = newText.join(''); 
+  //console.log(newText); 
+  subDisplay1.innerHTML = newText;
+
+  accumulatedVal.pop();
+  console.log(accumulatedVal);
+  num3 = parseInt(newText);
+  console.log(num3); 
+  subDisplay2.value = num3;
+  subDisplay2.style.color = 'hsl(0, 0%, 67%)';
+  
+  accumulatedVal.push(num3);
+  console.log(accumulatedVal); 
+  console.log(accumulatedVal.join('')); 
+  showcaseOutput(accumulatedVal.join(''));
+  return;
+ }
+ console.log(accumulatedVal[accumulatedVal.length-1]);
+
+   // negative decimals below 9 or higher than -9
+if (accumulatedVal.length >= 1 && (text.indexOf('.') != -1)) {
+  if (accumulatedVal[accumulatedVal.length-1] >= -9 && accumulatedVal[accumulatedVal.length-1] < 0) {
+    console.log(accumulatedVal); 
+  
+    newText = text.split('');
+    console.log(newText); 
+    newText.pop();
+    console.log(newText); 
+    newText = newText.join(''); 
+    console.log(newText); 
+    subDisplay1.innerHTML = newText;
+  
     accumulatedVal.pop();
+    console.log(accumulatedVal);
+    num3 = parseInt(newText);
+    console.log(num3); 
+    subDisplay2.value = num3;
+    subDisplay2.style.color = 'hsl(0, 0%, 67%)';
+    
+    accumulatedVal.push(num3);
+    console.log(accumulatedVal); 
+    console.log(accumulatedVal.join('')); 
+    showcaseOutput(accumulatedVal.join(''));
+    return;
+  }
+  if (accumulatedVal[accumulatedVal.length-1] > 0 && accumulatedVal[accumulatedVal.length-1] <= 9) {
+
     newText = text.split('');
     console.log(newText);
     newText.pop();
+    newText = newText.join('');
+    console.log(newText);
     console.log(accumulatedVal);
-    subDisplay1.innerHTML = newText.join(''); 
-    subDisplay2.value = parseInt(newText);
+    subDisplay1.innerHTML = newText; 
+    accumulatedVal.pop();
+    newText = parseFloat(newText);
+    console.log(newText);
+    subDisplay2.value = newText;
     subDisplay2.style.color = 'hsl(0, 0%, 67%)';
-    //subDisplay2.value = num; 
-    text = accumulatedVal.join('');
-    
-    showcaseOutput(text);
-   } 
+    //accumulatedVal.push(newText);
+    text2 = accumulatedVal.join('');
+    console.log(text2);
+    if (!isNaN(newText)){
+      console.log(showcaseOutput(text2));
+      return;
+    }
+    if(accumulatedVal[0] == '.'){
+      subDisplay2.value = 0;
+      
+    }
+        
+    if (accumulatedVal.length == 1 || (newText >= -9 && newText < 0) ||
+    (newText > 0 && newText <= 9)) {
+      console.log(text2);
+      resetall();
+     }
+     console.log(showcaseOutput(text2));
+    return;
+   }
 
- }
+  }
 
+    // single digits (negative or positive)
+if (accumulatedVal.length === 1 && (text.indexOf('.') == -1) && ((accumulatedVal[accumulatedVal.length-1] >= -9 && accumulatedVal[accumulatedVal.length-1] < 0) ||
+(accumulatedVal[accumulatedVal.length-1] >= 0 && accumulatedVal[accumulatedVal.length-1] <= 9)))   { 
+
+ console.log(accumulatedVal.length);
+ resetall();
+}
+
+}
+
+  // to eliminate symbols and consecutive inputted numbers
+  if (accumulatedVal.length > 1 && text.length > 1) { 
+
+      
+    newText = text.split('');
+    console.log(newText);
+    newText.pop();
+    newText = newText.join('');
+    console.log(newText);
+    console.log(accumulatedVal);
+    subDisplay1.innerHTML = newText; 
+    accumulatedVal.pop();
+    newText = parseFloat(newText);
+    console.log(newText);
+    subDisplay2.value = newText;
+    subDisplay2.style.color = 'hsl(0, 0%, 67%)';
+    //accumulatedVal.push(newText);
+    text2 = accumulatedVal.join('');
+    console.log(text2);
+    if (!isNaN(newText)){
+      console.log(showcaseOutput(text2));
+      return;
+    }
+    if(accumulatedVal[0] == '.'){
+      subDisplay2.value = 0;
+      
+    }
+        
+    if (accumulatedVal.length == 1 || (newText >= -9 && newText < 0) ||
+    (newText > 0 && newText <= 9)) {
+      console.log(text2);
+      resetall();
+     }
+     console.log(showcaseOutput(text2));
+    return;
+   }
+
+
+} 
+
+ 
    
 // FUNCTIONS TO DO OPERATIONS
 
@@ -719,36 +901,48 @@ function totalreturn() {
   if (addminus.length >= 1 && multdiv.length >= 1) {
     totalarr = multdiv.concat(addminus);
     total = totalarr.reduce((a,b) => a + b);
+    if (total >= 999999999999999) {
+      total = total.toExponential(5);
+  } else {
     num = total % 1;
     if(num == 0){
       total = total.toFixed(1); 
     } else {
-      total = total.toFixed(10); 
+      total = total.toFixed(5); 
      } 
-     console.log(addminus);
-     console.log(multdiv);
-     console.log(total);
+  }
+   
+   
   } if (addminus.length == 0 && multdiv.length >= 1){
     total = multdiv.reduce((a,b) => a + b);
-    num = total % 1;
-    if(num == 0){
-      total = total.toFixed(1); 
+    if (total >= 999999999999999) {
+      total =  total.toExponential(5);
     } else {
-      total = total.toFixed(10); 
-     } 
-     console.log(multdiv);
-    console.log(total);
-  } if (addminus.length == 1 && multdiv.length == 0){
+      num = total % 1;
+      if(num == 0){
+        total = total.toFixed(1); 
+      } else {
+        total = total.toFixed(5); 
+       } 
+    }
+    
+    
+  } if (addminus.length == 1 && multdiv.length == 0) {
      total = addminresult;
-     num = total % 1;
-     if(num == 0){
-      total = total.toFixed(1); 
-    } else {
-      total = total.toFixed(10); 
-     } 
-     console.log(total);
+     if (total >= 999999999999999) {
+      total = total.toExponential(5);
+     } else {
+      num = total % 1;
+      if(num == 0){
+       total = total.toFixed(1); 
+      } else {
+       total = total.toFixed(5); 
+      } 
+     }
+    
+     
   }
-
+ 
 }
 
 //Function to reset individual outputs to recalculate when new inputs are added:
@@ -759,7 +953,7 @@ function totalreturn() {
     indicesOfminusplusSigns.length = 0;
     addminus.length = 0;
     addminresult = 0;
-    
+    count = 0;
   }
 
   //Function to reset everything:
@@ -771,6 +965,7 @@ function totalreturn() {
     subDisplay1.innerHTML = '';
     subDisplay2.style.color = 'black';
     subDisplay1.style.fontSize = '30px';
+    subDisplay2.style.fontSize = '60px';
     total = 0;
   }
 
@@ -787,8 +982,15 @@ function equalTotal() {
   subDisplay1.innerHTML = total;
   subDisplay2.value = ''; 
   subDisplay1.style.color = 'black';
-  subDisplay1.style.fontSize = '60px';
-
+  if (subDisplay1.innerHTML.length <= 10) {
+    subDisplay1.style.fontSize = '60px';
+  }
+  if (subDisplay1.innerHTML.length > 10 || subDisplay1.innerHTML.length <= 12) {
+    subDisplay1.style.fontSize = '50px';
+  }
+  if (subDisplay1.innerHTML.length > 12) {
+    subDisplay1.style.fontSize = '40px';
+  }
    } 
    
  }

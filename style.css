@@ -28,38 +28,47 @@ body {
     }
 
     .mainDisplay {
+        position:relative;
         display: flex;
-        flex-direction: column;
-        align-content: right;
-        justify-content: right;
+        flex-direction: row;
         border: 1px solid black;
         background-color: hsl(120, 100%, 90%);
-        height: 200px;
+        height: 190px;
         width: 360px;
         z-index: 2;
-        padding: 10px;
+        padding: 5px;
         border-radius: 10px;
         margin-left: 3px;
-        
+        gap: 10px;
     }
+  
     .subDisplay1 {
-        height: 60px;
-        width: 100%;
-        text-align: right;
-        line-height: 80px;
-        padding-inline-end: 5px;
-        font-size: 30px;
-
+        position:absolute;
+        top: 5px;
+        right: 10px;
+        display: flex;
+        align-items: flex-end;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+        text-overflow: ellipsis;
+        width: 95%;
+        height: 90px;
+        font-size: 40px;
+        overflow-y: auto;  
+        word-break: break-all;
+      
     }
 
     .subDisplay2 {
-        height: 80px;
-        width: 100%;
+        
+        position:absolute;
+        bottom: 4px;
+        right: 9px;
+        height: 52px;
+        width: 95%;
         text-align: right;
-        line-height: 110px;
-        padding-inline-end: 5px;
-        font-size: 60px;
         border: none;
+        font-size: 65px;
         background-color: hsl(120, 100%, 90%);
     }
 
