@@ -53,7 +53,7 @@ body {
         text-overflow: ellipsis;
         width: 95%;
         height: 90px;
-        font-size: 40px;
+        font-size: 60px;
         overflow-y: auto;  
         word-break: break-all;
       
@@ -68,7 +68,7 @@ body {
         width: 95%;
         text-align: right;
         border: none;
-        font-size: 65px;
+        font-size: 60px;
         background-color: hsl(120, 100%, 90%);
     }
 

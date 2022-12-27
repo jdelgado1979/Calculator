@@ -81,20 +81,19 @@ function printNumber (e) {
       accumulatedVal.push(num);
       subDisplay2.value = num;
       subDisplay2.style.color = 'hsl(0, 0%, 67%)';
+      //subDisplay1.innerHTML = (parseInt(subDisplay1.innerHTML.replace(/[^\d]+/gi, '')) || 0).toLocaleString();
+      
+    // return invalid if division by zero  
+      if(accumulatedVal[accumulatedVal.length-1] == 0 && accumulatedVal[accumulatedVal.length-2]== '/'){
+         alert('invalid format');
+         resetall();
+      }
+     
       text = accumulatedVal.join('');
       showcaseOutput(text);
-      
     }
-    if (subDisplay2.value >= 999999999){
-      subDisplay2.style.fontSize = '50px';
-    }
-    if (subDisplay2.value >= 999999999999){
-      subDisplay2.style.fontSize = '40px';
-    }
-    if (subDisplay2.value >= 999999999999999) {
-        subDisplay2.style.fontSize = '30px';
-    }
-  
+
+    // restrict input of numbers to 15 digits
     if(accumulatedVal.length > 15) {
      testHigherFifteen(accumulatedVal);
      
@@ -107,15 +106,12 @@ function printNumber (e) {
       let num5 = parseFloat(firstResult);
       subDisplay2.value = num5.toExponential();
       subDisplay2.style.color = 'hsl(0, 0%, 67%)';
-      text = accumulatedVal.join('');
-      console.log(count);
+      
       showcaseOutput(firstResult);
       return;
      
     }
-    
-    
-  }
+   }
     
     console.log(accumulatedVal);
    }
@@ -130,7 +126,7 @@ function printNumber (e) {
        if (typeof(array[i]) == 'number'){
         count++;
           } 
-      if (count == 15 || array[i] == '*') {  break; }   
+      if (count == 15 || (array[i] == '*' || array[i] == '/' || array[i] == '+' || array[i] == '-')) {  break; }   
       }
       
       return count;
@@ -167,9 +163,9 @@ function printNumber (e) {
     const str = e.target.firstChild.nodeValue;
     let testValue4 = accumulatedSym[accumulatedSym.length - 1];
          
-    if ((accumulatedSym.length == 0) || (testValue4 == '+' || testValue4 == '-' || testValue4 == '*' || testValue4 == '/' ) 
-    && (subDisplay1.innerHTML !== total) )  {
-      if ((numeros[numeros.length-1] !== parseFloat(num2))) {
+    if (accumulatedSym.length == 0 || (testValue4 == '+' || testValue4 == '-' || testValue4 == '*' || testValue4 == '/' ) 
+    && (subDisplay1.innerHTML !== total) ) {
+      if ((numeros[numeros.length-1] !== parseFloat(num2)) || accumulatedVal[accumulatedVal.length - 1] == 0) {
         var y = document.createTextNode(str);  
         subDisplay1.appendChild(y); 
         accumulatedVal.push(str);
@@ -177,6 +173,139 @@ function printNumber (e) {
       }
     } else return;  
    } 
+
+
+//Function to obtain input and print output in the second screen 
+const regex = /(\-)?[0-9]*(\.)?[0-9]+/g;
+const regexA = /[0-9]*(\.)?[0-9]+/g;
+const regex2 = /(\-)?[0-9]*(\.)?[0-9]*[\W](\-)?[0-9]*(\.)?[0-9]*([\W](\-)?[0-9]*(\.)?[0-9]+)*$/;
+
+let resultx;
+let resulty;     
+  
+  function showcaseOutput (a) {
+   
+    resultx = regex.exec(a);
+    resulty = regex2.exec(a);
+    let num;
+    console.log(a);
+
+       
+    console.log(resultx);
+
+    if (resultx) {
+
+     //return numbers with commas for better reading 
+      
+       num = parseFloat(resultx.input);
+       console.log(num);
+       subDisplay1.innerHTML = num.toLocaleString(undefined, {maximumFractionDigits: 15});
+       
+       //return numbers with commas for better reading
+       subDisplay2.value = num.toLocaleString(undefined, {maximumFractionDigits: 15});
+       numeros.push(num);
+       
+
+     
+      // resize according to number of digits 
+        if (a.length < 7) {
+        subDisplay2.style.fontSize = '60px';
+        subDisplay1.style.fontSize = '60px';
+         } 
+       
+        if ( a.length == 8 ) {
+              subDisplay2.style.fontSize = '50px';
+              subDisplay1.style.fontSize = '50px';
+            } 
+        if (a.length >= 11 ) {
+              subDisplay2.style.fontSize = '40px';
+              subDisplay1.style.fontSize = '40px';
+            }   
+            if (a.length >= 13 ) {
+              subDisplay2.style.fontSize = '35px';
+              subDisplay1.style.fontSize = '35px';
+            } 
+        if (a.length == 15 ) {
+              subDisplay2.style.fontSize = '30px';
+              subDisplay1.style.fontSize = '30px';
+            }     
+     
+    }
+         
+    
+   if (resulty) {
+
+      operatorSigns = [];
+      stringNumbers = resulty[0].match(regex);
+      numeros = stringNumbers.map(Number);
+        
+      // if sign push it
+      for(let i = 0; i < accumulatedVal.length; i++){
+        if(accumulatedVal[i] == '/' || accumulatedVal[i] == '*' || accumulatedVal[i] == '-' || accumulatedVal[i] == '+'){
+          operatorSigns.push(accumulatedVal[i]);
+        }
+      }
+    
+         // this is when you have one number (before inputting the sign) so it wont continue to total anything.
+     if (numeros.length == 1) {
+      let numi = numeros[0];
+      subDisplay2.value = numi;
+      return;
+    } 
+      
+      //this is to show the numbers in the display with comma separation  
+     
+      let numbersToShow = resulty[0].match(regexA);
+      
+      let numbersSeparated = [];
+      for(let k = 0; k <= numbersToShow.length-1;k++){
+        numbersSeparated.push(parseFloat(numbersToShow[k]).toLocaleString(undefined, { maximumFractionDigits: 15}));
+      }
+      let allConcatenated = [];
+      for(let l = 0; l <= numbersSeparated.length-1;l++){
+        allConcatenated.push(numbersSeparated[l]);
+        allConcatenated.push(operatorSigns[l]);
+      }
+       
+       subDisplay1.innerHTML = allConcatenated.join('');
+
+       // resize according to number of digits 
+       if (a.length <= 5) {
+       subDisplay2.style.fontSize = '60px';
+       subDisplay1.style.fontSize = '60px';
+       } 
+ 
+      if (a.length >= 7 ) {
+      subDisplay2.style.fontSize = '50px';
+      subDisplay1.style.fontSize = '50px';
+      } 
+      if ( a.length >= 9 ) {
+        subDisplay2.style.fontSize = '40px';
+        subDisplay1.style.fontSize = '40px';
+      } 
+      if (a.length >= 12 ) {
+        subDisplay2.style.fontSize = '35px';
+        subDisplay1.style.fontSize = '35px';
+      }   
+      if (a.length >= 15 ) {
+        subDisplay2.style.fontSize = '30px';
+        subDisplay1.style.fontSize = '30px';
+      } 
+
+     // this is to input for calculation
+      signsOrder(operatorSigns, stringNumbers);
+      multDivOperation(indicesOfSigns);
+            
+      signsOrder2(operatorSigns, stringNumbers);
+      addSubtractOperation(indicesOfminusplusSigns);
+
+      totalreturn(); 
+      subDisplay2.value = total;
+      
+      }
+    
+     reset1();
+     }
 
 
  //Function for percentage
@@ -189,33 +318,27 @@ function printNumber (e) {
     }
 
 
- let text = subDisplay1.innerHTML;
- let num = parseInt(text);
- 
- num = num % 1;
+ let text = accumulatedVal.join('');
+ let num = parseFloat(text);
+ console.log(text);
+ console.log(num);
+ num2 = (num/100);
+console.log(num2);
+ accumulatedVal.length = 0; 
+ accumulatedVal.push(num2);
+ subDisplay2.style.color = 'hsl(0, 0%, 67%)';
+ subDisplay2.value = num2; 
+ console.log(accumulatedVal);
+ text = num2.toString();
+ console.log(text);
+ console.log(typeof(text));
+ subDisplay1.innerHTML = text;
+ subDisplay1.style.color = 'black';
+ subDisplay1.style.fontSize = '60px';
+ showcaseOutput(text);
+ accumulatedSym.length = 0;
+  return;
   
-  if(num == 0){
-    num2 = (subDisplay2.value/100).toFixed(2);
-  } else {
-    num2 = (subDisplay2.value/100).toFixed(10);
-  }
-
-  if(subDisplay2.value != null ){ 
-    if (numeros[numeros.length-1]) {
-     numeros.pop(numeros[numeros.length-1]);
-     numeros.push(num2); 
-    }
-     subDisplay1.innerHTML = num2; 
-     subDisplay1.style.color = 'black';
-     subDisplay1.style.fontSize = '60px';
-     accumulatedVal.length = 0; 
-     accumulatedVal.push(num2);
-     subDisplay2.style.color = 'hsl(0, 0%, 67%)';
-     subDisplay2.value = num2; 
-     text = accumulatedVal.join('');
-     showcaseOutput(text);
-    } 
-  console.log(accumulatedVal);
   } 
 
   // Function to convert a positive number to negative and viceversa
@@ -259,8 +382,14 @@ function printNumber (e) {
       num = parseInt(cutlastnumber(text));
       console.log(num);
       changeMinustoPlusArray(accumulatedVal);
-     } else if (accumulatedSym[accumulatedSym.length-1] == '.' && accumulatedVal.length >= 1){
+     } 
+   
+     else if (accumulatedSym[accumulatedSym.length-1] == '.' && accumulatedVal.length >= 1){
        cutAndReplace(accumulatedVal,cutlastnumber(text));
+       if (accumulatedVal[accumulatedVal.length-1] < 0){
+        changeMinustoPlusArray(accumulatedVal);
+        console.log(accumulatedVal);
+       }
      }
     
     if(subDisplay2.value != null ){ 
@@ -269,8 +398,9 @@ function printNumber (e) {
        subDisplay2.value = num; 
        text = accumulatedVal.join('');
        console.log(text);
-       subDisplay1.innerHTML = text; 
+       
        showcaseOutput(text);
+       subDisplay1.innerHTML = (parseInt(text.replace(/[^\d]+/gi, '')) || 0).toLocaleString();
       } 
 
   }
@@ -313,7 +443,7 @@ function printNumber (e) {
         if(x <1 && x>0 || accumulatedSym[accumulatedSym.length-1] == '.') {
           array.push(-x);
           console.log(typeof(x));
-          console.log(accumulatedVal);
++          console.log(accumulatedVal);
           break;
         } else {
           console.log(typeof(x));
@@ -338,65 +468,15 @@ function printNumber (e) {
          array[i] = '+'
          break;
        } 
+       if(array[i] < 0 && array[i-1] === '-') {
+        array[i] = array[i]*(-1);
+        array[i-1] = '+';
+        break;
+      } 
     }
   return array;
 }
-
  
-//Function to obtain input and print output in the second screen 
-const regex = /(\-)?[0-9]*(\.)?[0-9]+/g;
-const regex2 = /(\-)?[0-9]*(\.)?[0-9]*[\W](\-)?[0-9]*(\.)?[0-9]*([\W](\-)?[0-9]*(\.)?[0-9]+)*$/;
-
-let resultx;
-let resulty;     
-  
-  function showcaseOutput (a) {
-   
-    resultx = regex.exec(a);
-    resulty = regex2.exec(a);
-    let num;
-    
-    if (resultx) {
-      num = parseFloat(resultx.input);
-      subDisplay2.value = num;
-      numeros.push(num);
-    } 
-      
-
-   if (resulty) {
-
-       operatorSigns = [];
-             
-      stringNumbers = resulty[0].match(regex);
-      numeros = stringNumbers.map(Number);
-        
-      // if sign push it
-      for(let i = 0; i < accumulatedVal.length; i++){
-        if(accumulatedVal[i] == '/' || accumulatedVal[i] == '*' || accumulatedVal[i] == '-' || accumulatedVal[i] == '+'){
-          operatorSigns.push(accumulatedVal[i]);
-        }
-      }
-
-      if (numeros.length == 1) {
-        let numi = numeros[0];
-        subDisplay2.value = numi;
-        return;
-      } 
-      signsOrder(operatorSigns, stringNumbers);
-      multDivOperation(indicesOfSigns);
-            
-      signsOrder2(operatorSigns, stringNumbers);
-      addSubtractOperation(indicesOfminusplusSigns);
-
-      totalreturn(); 
-      subDisplay2.value = total;
-      
-      }
-    
-     reset1();
-     }
-
-     
  // Function to delete numbers and operators if mistakes are made
 
  // Function to check if number
@@ -906,9 +986,9 @@ function totalreturn() {
   } else {
     num = total % 1;
     if(num == 0){
-      total = total.toFixed(1); 
-    } else {
-      total = total.toFixed(5); 
+      total = total.toLocaleString(undefined, {maximumFractionDigits: 2});
+     } else {
+      total = total.toLocaleString(undefined, {maximumFractionDigits: 15}); 
      } 
   }
    
@@ -920,9 +1000,9 @@ function totalreturn() {
     } else {
       num = total % 1;
       if(num == 0){
-        total = total.toFixed(1); 
-      } else {
-        total = total.toFixed(5); 
+        total = total.toLocaleString(undefined, {maximumFractionDigits: 2});
+       } else {
+        total = total.toLocaleString(undefined, {maximumFractionDigits: 15}); 
        } 
     }
     
@@ -934,9 +1014,9 @@ function totalreturn() {
      } else {
       num = total % 1;
       if(num == 0){
-       total = total.toFixed(1); 
+       total = total.toLocaleString(undefined, {maximumFractionDigits: 2});
       } else {
-       total = total.toFixed(5); 
+       total = total.toLocaleString(undefined, {maximumFractionDigits: 15}); 
       } 
      }
     
@@ -961,12 +1041,16 @@ function totalreturn() {
   function resetall() {
     accumulatedVal.length = 0;
     accumulatedSym.length = 0;
+    numeros.length = 0;
     subDisplay2.value = subDisplay2.defaultValue; 
     subDisplay1.innerHTML = '';
     subDisplay2.style.color = 'black';
     subDisplay1.style.fontSize = '30px';
     subDisplay2.style.fontSize = '60px';
     total = 0;
+    num2 = 0;
+    console.log(numeros);
+    
   }
 
  
@@ -974,23 +1058,45 @@ function totalreturn() {
 
 function equalTotal() {
 
-  if (subDisplay2.value == subDisplay2.defaultValue){
+  // this is to do multiplication by zero
+
+  if (subDisplay2.value == total && subDisplay1.innerHTML.length > 1){
+    subDisplay1.innerHTML = total.toLocaleString(undefined, {maximumFractionDigits: 15});
+    subDisplay2.value = ''; 
+    subDisplay1.style.color = 'black';
+  }
+
+   // this is to return if only zero
+  if ((subDisplay2.value == subDisplay2.defaultValue)){
     return;
   }
 
-  if (subDisplay2.value == total ) {
-  subDisplay1.innerHTML = total;
+  if (subDisplay2.value == total) {
+     
+  subDisplay1.innerHTML = total.toLocaleString(undefined, {maximumFractionDigits: 15});
   subDisplay2.value = ''; 
   subDisplay1.style.color = 'black';
-  if (subDisplay1.innerHTML.length <= 10) {
-    subDisplay1.style.fontSize = '60px';
-  }
-  if (subDisplay1.innerHTML.length > 10 || subDisplay1.innerHTML.length <= 12) {
+
+   // resize according to number of digits 
+   if (subDisplay1.innerHTML.length <= 5) {
+      subDisplay1.style.fontSize = '60px';
+    } 
+
+   if (subDisplay1.innerHTML.length == 7 ) {
     subDisplay1.style.fontSize = '50px';
-  }
-  if (subDisplay1.innerHTML.length > 12) {
-    subDisplay1.style.fontSize = '40px';
-  }
+   } 
+   if ( subDisplay1.innerHTML.length == 9 ) {
+     subDisplay1.style.fontSize = '40px';
+   } 
+   if (subDisplay1.innerHTML.length >= 12 ) {
+     subDisplay1.style.fontSize = '35px';
+   }   
+   if (subDisplay1.innerHTML.length >= 15 ) {
+     subDisplay1.style.fontSize = '30px';
+     
+   } 
+  
+ 
    } 
    
  }
