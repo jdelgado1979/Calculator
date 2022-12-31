@@ -128,8 +128,6 @@ function printNumber (e) {
       
       return count;
     }
-
-
     
   //Function to input operation symbols
   
@@ -172,98 +170,83 @@ function printNumber (e) {
    } 
 
 
-//Function to obtain input and print output in the second screen 
+
+//Function to obtain input and print output in the second screen  
 const regex = /(\-)?[0-9]*(\.)?[0-9]+/g;
 const regexA = /[0-9]*(\.)?[0-9]+/g;
-const regex2 = /(\-)?[0-9]*(\.)?[0-9]*[\W](\-)?[0-9]*(\.)?[0-9]*([\W](\-)?[0-9]*(\.)?[0-9]+)*$/;
 
-let resultx;
-let resulty;     
   
-  function showcaseOutput (a) {
-   
-    resultx = regex.exec(a);
-    resulty = regex2.exec(a);
-    let num;
-   
-    if (resultx) {
-
-      console.log(accumulatedVal);
-
-     //return numbers with commas for better reading 
+  function showcaseOutput(a) {
       
-       num = parseFloat(resultx.input);
+    let num;
+    let b = a.split('');
+    let x = parseFloat(b[0]);
+    
+     if (a.indexOf('-') === 0 || a[0] == '.' || isNumber(x)) {
+
+      if (b.indexOf('*') == -1 && b.indexOf('/') == -1 && b.indexOf('+') == -1 && (a.lastIndexOf('-') ===  0 || a.indexOf('-') == -1 ) ) { 
+      
+       //return numbers with commas for better reading 
+       num = parseFloat(a);
        subDisplay1.innerHTML = num.toLocaleString(undefined, {maximumFractionDigits: 15});
        
        //return numbers with commas for better reading
-       
        subDisplay2.value  =  num.toLocaleString(undefined, {maximumFractionDigits: 15});
        numeros.push(num);
-       
-
-     
+            
       // resize according to number of digits 
         if (a.length <= 7) {
         subDisplay2.style.fontSize = '60px';
         subDisplay1.style.fontSize = '60px';
+        subDisplay2.style.color = 'hsl(0, 0%, 67%)';
          } 
        
-        if ( a.length == 8 ) {
+        if ( a.length >= 8 ) {
               subDisplay2.style.fontSize = '50px';
               subDisplay1.style.fontSize = '50px';
+              subDisplay2.style.color = 'hsl(0, 0%, 67%)';
             } 
         if (a.length >= 11 ) {
               subDisplay2.style.fontSize = '40px';
               subDisplay1.style.fontSize = '40px';
+              subDisplay2.style.color = 'hsl(0, 0%, 67%)';
             }   
             if (a.length >= 13 ) {
               subDisplay2.style.fontSize = '35px';
               subDisplay1.style.fontSize = '35px';
+              subDisplay2.style.color = 'hsl(0, 0%, 67%)';
             } 
         if (a.length >= 15 ) {
               subDisplay2.style.fontSize = '30px';
               subDisplay1.style.fontSize = '30px';
+              subDisplay2.style.color = 'hsl(0, 0%, 67%)';
               subDisplay1.innerHTML = num.toLocaleString(undefined, {maximumFractionDigits: 15});
             }     
-            console.log(accumulatedVal);
+            
     }
-         
+   
     
-   if (resulty) {
+  }
+
+   
+   if  (b.indexOf('*') >= 1 || b.indexOf('/') >= 1 || b.indexOf('+') >= 1 || (a.lastIndexOf('-') > 0)) {
     
-    console.log(accumulatedVal);
       operatorSigns = [];
-      stringNumbers = resulty[0].match(regex);
+      stringNumbers = a.match(regex);
       numeros = stringNumbers.map(Number);
-      console.log(operatorSigns);
-      console.log(stringNumbers);
-      console.log(numeros);
-        
+             
       // if sign push it
       for(let i = 0; i < accumulatedVal.length; i++){
         if(accumulatedVal[i] == '/' || accumulatedVal[i] == '*' || accumulatedVal[i] == '-' || accumulatedVal[i] == '+'){
           operatorSigns.push(accumulatedVal[i]);
         }
       }
-    
-         // this is when you have one number (before inputting the sign) so it wont continue to total anything.
-     if (numeros.length == 1) {
-      let numi = numeros[0];
-      subDisplay2.value = numi;
-      if(numi < 0){
-        subDisplay2.value = numi.toLocaleString(undefined, {maximumFractionDigits: 15});
-      }
-      return;
-    } 
-      
+            
       //this is to show the numbers in the display with comma separation  
-     
-      let numbersToShow = resulty[0].match(regex);
-      let numbersToShow2 = resulty[0].match(regexA);
-
-      
-      
+      let numbersToShow = a.match(regex);
+      let numbersToShow2 = a.match(regexA);
       let numbersSeparated = [];
+      
       for(let k = 0; k <= numbersToShow.length-1;k++){
         numbersSeparated.push(parseFloat(numbersToShow[k]).toLocaleString(undefined, { maximumFractionDigits: 15}));
       }
@@ -273,12 +256,10 @@ let resulty;
         numbersSeparated2.push(parseFloat(numbersToShow2[k]).toLocaleString(undefined, { maximumFractionDigits: 15}));
       }
 
-
       let allConcatenated = [];
-      for(let l = 0; l <= numbersSeparated.length-1;l++){
-        
+      for(let l = 0; l <= numbersSeparated.length-1; l++) {
         allConcatenated.push(numbersSeparated[l]);
-        
+    
         if(operatorSigns[l] == undefined) {
           break;
         }
@@ -286,16 +267,17 @@ let resulty;
                  
       } 
      
-      for(let l = 0; l <= allConcatenated.length-1;l++){
-        if(operatorSigns[l] == '-'){
-          allConcatenated.splice((2*l+2), 1, numbersSeparated2[l+1]);
-                    
+     
+        for(let l = 0; l <= allConcatenated.length-1;l++){
+          if(operatorSigns[l] == '-' && numbersSeparated2[l+1] != undefined) {
+            allConcatenated.splice((2*l+2), 1, numbersSeparated2[l+1]);
+                      
+          } 
         } 
-      } 
-            
+      
+        
        subDisplay1.innerHTML = allConcatenated.join('');
-       console.log(accumulatedVal);
-
+       
        // resize according to number of digits 
        if (a.length <= 6) {
        subDisplay2.style.fontSize = '60px';
@@ -319,23 +301,28 @@ let resulty;
         subDisplay1.style.fontSize = '30px';
       } 
 
-     // this is to input for calculation
-      signsOrder(operatorSigns, stringNumbers);
-      multDivOperation(indicesOfSigns);
-            
-      signsOrder2(operatorSigns, stringNumbers);
-      addSubtractOperation(indicesOfminusplusSigns);
-      console.log(accumulatedVal);
-      totalreturn(); 
-      subDisplay2.value = total;
       
-      }
-    
-     reset1();
+
+     // this is to input for calculation
+     if (accumulatedVal[accumulatedVal.length-1] != '.' && accumulatedVal[accumulatedVal.length-1] != '-' && 
+         accumulatedVal[accumulatedVal.length-1] != '+' && accumulatedVal[accumulatedVal.length-1] != '*' && accumulatedVal[accumulatedVal.length-1] != '/' ) {
+        
+        signsOrder(operatorSigns, stringNumbers);
+        multDivOperation(indicesOfSigns);
+        signsOrder2(operatorSigns, stringNumbers);
+        addSubtractOperation(indicesOfminusplusSigns);
+        totalreturn(); 
+        subDisplay2.value = total;
+
+       }
+         
      }
+     reset1();
+  
+    }
 
 
- //Function for percentage
+  //Function for percentage
   let num2;
 
   function percentNum () {
@@ -377,14 +364,18 @@ let resulty;
      
     }
     
-      let text = subDisplay1.innerHTML;
-      console.log(text);
-      console.log(accumulatedVal);
+      let text = accumulatedVal.join('');
       let num;
       if (accumulatedVal.length >= 1 && accumulatedSym.length == 0){
-      num = parseFloat(cutlastnumber(text));
-      num = num*(-1);
+      if (accumulatedVal.length == 1 && parseFloat(accumulatedVal[0]) < 0 ) {
+      num = parseFloat(accumulatedVal[0])*(-1);
       cutAndReplace(accumulatedVal,num);
+      } else {
+        num = parseFloat(cutlastnumber(text));
+        num = num*(-1);
+        cutAndReplace(accumulatedVal,num);
+      }
+     
       } else if (accumulatedSym[accumulatedSym.length-1] == '*' || accumulatedSym[accumulatedSym.length-1] == '/' || accumulatedSym[accumulatedSym.length-1] == '+' && 
       accumulatedVal.length > 1){
       num = parseFloat(cutlastnumber(text));
@@ -419,9 +410,8 @@ let resulty;
     let num = [];
     let num2 = [];
     let array = a.split('');
-      for(let i = array.length-1; i >= 0; i--){
-         
-         if(array[i] === '-' || array[i] === '*' || array[i] === '/' || array[i] === '+' || array.length === 0) {
+          for(let i = array.length-1; i >= 0; i--){
+           if(array[i] === '-' || array[i] === '*' || array[i] === '/' || array[i] === '+' || array.length === 0) {
            break;
          } else if (array[i] === ',') {
           continue;
@@ -501,75 +491,53 @@ let resulty;
   let num3;
  
   // if the last value in my calculator is a number:
+  
 
  if (isNumber(accumulatedVal[accumulatedVal.length-1])){ 
 
   // higher digit numbers (negative or positive)
 if (text.length >= 1 &&  (accumulatedVal[accumulatedVal.length-1] < -9 || accumulatedVal[accumulatedVal.length-1] > 9) ) {
-  console.log(accumulatedVal); 
   newText = text.split('');
-  //console.log(newText); 
   newText.pop();
-  //console.log(newText); 
   newText = newText.join(''); 
-  //console.log(newText); 
   subDisplay1.innerHTML = newText;
   accumulatedVal.pop();
-  console.log(accumulatedVal);
   num3 = parseInt(newText);
-  console.log(num3); 
   subDisplay2.value = num3;
   subDisplay2.style.color = 'hsl(0, 0%, 67%)';
   accumulatedVal.push(num3);
-  console.log(accumulatedVal); 
-  console.log(accumulatedVal.join('')); 
   showcaseOutput(accumulatedVal.join(''));
   return;
  }
- console.log(accumulatedVal[accumulatedVal.length-1]);
 
-   // negative decimals below 9 or higher than -9
+ // negative decimals below 9 or higher than -9
 if (accumulatedVal.length >= 1 && (text.indexOf('.') != -1)) {
   if (accumulatedVal[accumulatedVal.length-1] >= -9 && accumulatedVal[accumulatedVal.length-1] < 0) {
-    console.log(accumulatedVal); 
     newText = text.split('');
-    console.log(newText); 
     newText.pop();
-    console.log(newText); 
     newText = newText.join(''); 
-    console.log(newText); 
     subDisplay1.innerHTML = newText;
     accumulatedVal.pop();
-    console.log(accumulatedVal);
     num3 = parseInt(newText);
-    console.log(num3); 
     subDisplay2.value = num3;
     subDisplay2.style.color = 'hsl(0, 0%, 67%)';
     accumulatedVal.push(num3);
-    console.log(accumulatedVal); 
-    console.log(accumulatedVal.join('')); 
     showcaseOutput(accumulatedVal.join(''));
     return;
   }
+
   if (accumulatedVal[accumulatedVal.length-1] > 0 && accumulatedVal[accumulatedVal.length-1] <= 9) {
     newText = text.split('');
-    console.log(newText);
     newText.pop();
     newText = newText.join('');
-    console.log(newText);
-    console.log(accumulatedVal);
     subDisplay1.innerHTML = newText; 
     accumulatedVal.pop();
     newText = parseFloat(newText);
-    console.log(newText);
     subDisplay2.value = newText;
     subDisplay2.style.color = 'hsl(0, 0%, 67%)';
-    //accumulatedVal.push(newText);
     text2 = accumulatedVal.join('');
-    console.log(text2);
     if (!isNaN(newText)){
-      console.log(showcaseOutput(text2));
-      return;
+        return;
     }
     if(accumulatedVal[0] == '.'){
       subDisplay2.value = 0;
@@ -577,8 +545,7 @@ if (accumulatedVal.length >= 1 && (text.indexOf('.') != -1)) {
     }
     if (accumulatedVal.length == 1 || (newText >= -9 && newText < 0) ||
     (newText > 0 && newText <= 9)) {
-      console.log(text2);
-      resetall();
+       resetall();
      }
      showcaseOutput(text2);
     return;
@@ -593,33 +560,15 @@ if (accumulatedVal.length === 1 && (text.indexOf('.') == -1) && ((accumulatedVal
 }
 
 }
-
-  // to eliminate symbols and consecutive inputted numbers
-  if (accumulatedVal.length > 1 && text.length > 1) {   
+  // to eliminate symbols and consecutive inputted numbers  && (typeof(accumulatedVal[accumulatedVal.length-1]) !== 'number')
+  if (accumulatedVal.length > 1 && text.length > 1 ) {   
     newText = text.split('');
-    console.log(newText);
     newText.pop();
     newText = newText.join('');
-    console.log(newText);
-    console.log(accumulatedVal);
     accumulatedVal.pop();
-    newText = parseFloat(newText);
-    console.log(newText);
-    console.log(accumulatedVal);
-    
-     //return numbers with commas for better reading 
-      
-     let numA = parseFloat(newText);
-     subDisplay1.innerHTML = numA.toLocaleString(undefined, {maximumFractionDigits: 15});
-     
-     //return numbers with commas for better reading
-     
-     subDisplay2.value  =  numA.toLocaleString(undefined, {maximumFractionDigits: 15});
-     subDisplay2.style.color = 'hsl(0, 0%, 67%)';
-    
     text2 = accumulatedVal.join('');
      if (!isNaN(newText)){
-     showcaseOutput(text2);
+      showcaseOutput(text2);
      return;
     }
     if(accumulatedVal[0] == '.'){
@@ -628,15 +577,13 @@ if (accumulatedVal.length === 1 && (text.indexOf('.') == -1) && ((accumulatedVal
     }
     if (accumulatedVal.length == 1 || (newText >= -9 && newText < 0) ||
        (newText > 0 && newText <= 9)) {
-        //console.log(text2);
-        resetall();
+         resetall();
      }
      showcaseOutput(text2);
     return;
    }
 } 
 
- 
    
 // FUNCTIONS TO DO OPERATIONS
 
@@ -701,25 +648,21 @@ if (differences[i] > 1) {
           firstNumber =  numeros[x[i]] *
                          numeros[x[i]+1];
          multdiv.push(firstNumber);
-        // console.log(firstNumber);
-       } if (operatorSigns[x[i]] == '/') {
+        } if (operatorSigns[x[i]] == '/') {
           firstNumber =  numeros[x[i]] /
                          numeros[x[i]+1];
          multdiv.push(firstNumber);
-        //  console.log(firstNumber);
-       }
+        }
   
       if (operatorSigns[x[i+1]] == '*') {
           secondNumber =  numeros[x[i+1]] *
                          numeros[x[i+1]+1];
          multdiv.push(secondNumber);
-       // console.log(secondNumber);
-       } if (operatorSigns[x[i+1]] == '/') {
+        } if (operatorSigns[x[i+1]] == '/') {
           secondNumber =  numeros[x[i+1]] /
                          numeros[x[i+1]+1];
          multdiv.push(secondNumber);
-         //console.log(secondNumber);
-       }
+        }
      }
  
   
@@ -730,13 +673,11 @@ if (differences[i] > 1) {
           secondNumber =  numeros[x[i+1]] *
                          numeros[x[i+1]+1];
          multdiv.push(secondNumber);
-       // console.log(secondNumber);
        } if (operatorSigns[x[i+1]] == '/') {
           secondNumber =  numeros[x[i+1]] /
                          numeros[x[i+1]+1];
          multdiv.push(secondNumber);
-        // console.log(secondNumber);
-       }
+        }
     }
  
    if ((differences[i-1] == undefined && differences[i+1] == 1) || (differences[i-1] == 1 && differences[i+1] > 1)) {
@@ -744,14 +685,12 @@ if (differences[i] > 1) {
           firstNumber =  numeros[x[i]] *
                          numeros[x[i]+1];
          multdiv.push(firstNumber);
-        // console.log(firstNumber);
-       } if (operatorSigns[x[i]] == '/') {
+        } if (operatorSigns[x[i]] == '/') {
           firstNumber =  numeros[x[i]] /
                          numeros[x[i]+1];
          multdiv.push(firstNumber);
-        //  console.log(firstNumber);
        }
-   }
+     }
     }
 
 // dealing with streaks of ones (consecutive multiplications or divisions), get the first 3 numbers (multiply or divide) and save it to result2
@@ -763,25 +702,19 @@ if( (differences[i] === 1) && ((differences[i-1] > 1) ||
     if (operatorSigns[x[i]] === '*'){
      result2 = numeros[x[i]] *
              numeros[x[i]+1];
-    //  console.log(result2);
-    if (operatorSigns[x[i+1]] === '*'){
+     if (operatorSigns[x[i+1]] === '*'){
       result2 = result2 * numeros[x[i]+2];
-    //  console.log(result2);
     } else if (operatorSigns[x[i+1]] === '/'){
       result2 = result2 / numeros[x[i]+2];
-    //  console.log(result2);
     }
      
     } else if (operatorSigns[x[i]] === '/') {
      result2 = numeros[x[i]] /
              numeros[x[i]+1];
-      //console.log(result2);
-    if (operatorSigns[x[i+1]] === '/'){
+     if (operatorSigns[x[i+1]] === '/'){
       result2 = result2 / numeros[x[i]+2];
-      //console.log(result2);
     }  else if (operatorSigns[x[i+1]] === '*'){
       result2 = result2 * numeros[x[i]+2];
-     // console.log(result2);
     }
   }
  }    
@@ -790,15 +723,12 @@ if( (differences[i] === 1) && ((differences[i-1] > 1) ||
    
 if ((differences[i] == 1) && (differences[i-1] == 1) &&
     (differences[i+1] == 1)) {
- 
     if (operatorSigns[x[i+1]] === '*'){
       result2 =
       result2 * numeros[x[i+1]+1];
-     //  console.log(result2);  
      } else if (operatorSigns[x[i+1]] === '/'){
      result2 =
       result2 / numeros[x[i+1]+1];
-     // console.log(result2);  
     }
   }
    
@@ -811,12 +741,10 @@ if((differences[i] === 1) && ((differences[i+1] > 1) ||
       result2 =
       result2 * numeros[x[i+1]+1];
        multdiv.push(result2);
-       //console.log(result2);  
      } else if (operatorSigns[x[i+1]] === '/'){
      result2 =
       result2 / numeros[x[i+1]+1];
        multdiv.push(result2);
-      // console.log(result2);  
     }
    }
 
@@ -850,7 +778,7 @@ if((differences[i] === 1) && ((differences[i-1] > 1) || (differences[i-1] == und
         }  else if (operatorSigns[x[i+1]] === '*'){
           result2 = result2 * numeros[x[i]+2];
           multdiv.push(result2);
-          //console.log(result2);
+          
        }
       }
      }    
@@ -920,12 +848,10 @@ function addSubtractOperation(a) {
    if (operatorSigns[0] === '+') {
       addminresult =  (numeros[0] +
       numeros[1]);
-      console.log(addminresult);
-   } if (operatorSigns[0]  === '-') {
+     } if (operatorSigns[0]  === '-') {
      addminresult = (numeros[0] +
       numeros[1]);
-      console.log(addminresult);
-   }
+    }
                  
   }
      
@@ -937,12 +863,10 @@ function addSubtractOperation(a) {
      if (operatorSigns[i] === '+') {
             addminresult =  (addminresult +
             numeros[a[i]+1]);
-           console.log(addminresult);
-     } if (operatorSigns[i]  === '-') {
+      } if (operatorSigns[i]  === '-') {
             addminresult = (addminresult +                        
             numeros[a[i]+1]);
-            console.log(addminresult);
-      }
+       }
    }  
      
      }
@@ -961,42 +885,42 @@ function totalreturn() {
   if (addminus.length >= 1 && multdiv.length >= 1) {
     totalarr = multdiv.concat(addminus);
     total = totalarr.reduce((a,b) => a + b);
-    if (total >= 999999999999999.00) {
+    if (total >= 999999999999999.00 || total <= -999999999999999.00) {
       total = total.toExponential(5);
   } else {
     num = total % 1;
     if(num == 0){
       total = total.toLocaleString(undefined, {maximumFractionDigits: 2});
      } else {
-      total = total.toLocaleString(undefined, {maximumFractionDigits: 15}); 
+      total = total.toLocaleString(undefined, {maximumFractionDigits: 7}); 
      } 
   }
    return;
    
   } if (addminus.length == 0 && multdiv.length >= 1){
     total = multdiv.reduce((a,b) => a + b);
-    if (total >= 999999999999999.00) {
+    if (total >= 999999999999999.00 || total <= -999999999999999.00) {
       total =  total.toExponential(5);
     } else {
       num = total % 1;
       if(num == 0){
         total = total.toLocaleString(undefined, {maximumFractionDigits: 2});
        } else {
-        total = total.toLocaleString(undefined, {maximumFractionDigits: 15}); 
+        total = total.toLocaleString(undefined, {maximumFractionDigits: 7}); 
        } 
     }
     return;
     
   } if (addminus.length == 1 && multdiv.length == 0) {
      total = addminresult;
-     if (total >= 999999999999999.00) {
+     if (total >= 999999999999999.00 || total <= -999999999999999.00) {
       total = total.toExponential(5);
      } else {
       num = total % 1;
       if(num == 0){
        total = total.toLocaleString(undefined, {maximumFractionDigits: 2});
       } else {
-       total = total.toLocaleString(undefined, {maximumFractionDigits: 15}); 
+       total = total.toLocaleString(undefined, {maximumFractionDigits: 7}); 
       } 
      }
     
@@ -1079,14 +1003,30 @@ function equalTotal() {
     if (subDisplay1.innerHTML.length >= 12 ) {
       subDisplay1.innerHTML = output.toLocaleString(undefined, {maximumFractionDigits: 15});
       subDisplay1.style.color = 'black';
-     subDisplay1.style.fontSize = '35px';
+      subDisplay1.style.fontSize = '35px';
      }   
-    if (subDisplay1.innerHTML.length > 15 ) {
+    if (subDisplay1.innerHTML.length > 15 && (output >= 999999999999999.00 || output <= -999999999999999.00 ) ) {
       subDisplay1.innerHTML = output.toExponential(5);
       subDisplay1.style.color = 'black';
-     subDisplay1.style.fontSize = '50px';
+      subDisplay1.style.fontSize = '50px';
      }  
-     
+     if (subDisplay1.innerHTML.length > 15 && (output < 999999999999999.00) ) {
+      let num;
+      num = output % 1;
+      if(num == 0){
+        subDisplay1.innerHTML = output.toLocaleString(undefined, {maximumFractionDigits: 2});
+        subDisplay1.style.color = 'black';
+        subDisplay1.style.fontSize = '50px';
+        if (subDisplay1.innerHTML.length >= 12) {
+          subDisplay1.style.fontSize = '35px';
+        } 
+       } else {
+        subDisplay1.innerHTML = output.toLocaleString(undefined, {maximumFractionDigits: 7});
+        subDisplay1.style.color = 'black';
+        subDisplay1.style.fontSize = '50px'; 
+       } 
+      
+     }  
         
   }
 
@@ -1094,8 +1034,6 @@ function equalTotal() {
   if ((subDisplay2.value == subDisplay2.defaultValue)){
     return;
   }
-
-    
 
  }
 
