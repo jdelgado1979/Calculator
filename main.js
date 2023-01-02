@@ -571,8 +571,6 @@ if (x[0] >= 0 && differences.length == 0) {
    multdiv.push(result);
    }
  }
-
-
  
  for (let i = 0; i <= differences.length; i++) {
 
@@ -596,7 +594,7 @@ if (differences[i] > 1) {
           secondNumber =  numeros[x[i+1]] /
                          numeros[x[i+1]+1];
          multdiv.push(secondNumber);
-       }
+        }
      }
  
     if ((differences[i-1] >= 1 && differences[i+1] == undefined) ||
@@ -609,10 +607,8 @@ if (differences[i] > 1) {
           secondNumber =  numeros[x[i+1]] /
                          numeros[x[i+1]+1];
          multdiv.push(secondNumber);
-       }
-    }
- 
-   if ((differences[i-1] == undefined && differences[i+1] == 1) || (differences[i-1] == 1 && differences[i+1] > 1)) {
+      }
+     } if (differences[i-1] == 1 && differences[i+1] > 1) {
        if (operatorSigns[x[i+1]] == '*') {
           firstNumber =  numeros[x[i+1]] *
                          numeros[x[i+1]+1];
@@ -623,6 +619,18 @@ if (differences[i] > 1) {
          multdiv.push(firstNumber);
        }
      }
+     if (differences[i-1] == undefined && differences[i+1] == 1) {
+      if (operatorSigns[x[i]] == '*') {
+         firstNumber =  numeros[x[i]] *
+                        numeros[x[i]+1];
+        multdiv.push(firstNumber);
+       } if (operatorSigns[x[i]] == '/') {
+         firstNumber =  numeros[x[i]] /
+                        numeros[x[i]+1];
+        multdiv.push(firstNumber);
+      }
+    }
+
     }
 
 // dealing with streaks of ones (consecutive multiplications or divisions), get the first 3 numbers (multiply or divide) and save it to result2
@@ -643,7 +651,7 @@ if( (differences[i] === 1) && ((differences[i-1] > 1) ||
              numeros[x[i]+1];
      if (operatorSigns[x[i+1]] === '/'){
       result2 = result2 / numeros[x[i]+2];
-     }  else if (operatorSigns[x[i+1]] === '*'){
+     }else if (operatorSigns[x[i+1]] === '*'){
       result2 = result2 * numeros[x[i]+2];
     }
   }
@@ -656,7 +664,7 @@ if ((differences[i] == 1) && (differences[i-1] == 1) &&
     if (operatorSigns[x[i+1]] === '*'){
       result2 =
       result2 * numeros[x[i+1]+1];
-     } else if (operatorSigns[x[i+1]] === '/'){
+    } else if (operatorSigns[x[i+1]] === '/'){
      result2 =
       result2 / numeros[x[i+1]+1];
     }
@@ -688,7 +696,7 @@ if((differences[i] === 1) && ((differences[i-1] > 1) || (differences[i-1] == und
         if (operatorSigns[x[i+1]] === '*'){
           result2 = result2 * numeros[x[i]+2];
           multdiv.push(result2);
-        } else if (operatorSigns[x[i+1]] === '/'){
+         } else if (operatorSigns[x[i+1]] === '/'){
           result2 = result2 / numeros[x[i]+2];
           multdiv.push(result2);
          }
@@ -730,7 +738,7 @@ function addSubtractOperation(a) {
   if (multdiv.length >= 1) {
    
     for(let k = 0; k < operatorSigns.length; k++) {      
-    if ((operatorSigns[k-1] === undefined && operatorSigns[k] === '+')    || (operatorSigns[k-1] === undefined && operatorSigns[k] === '-'))       {
+    if ((operatorSigns[k-1] === undefined && operatorSigns[k] === '+')    || (operatorSigns[k-1] === undefined && operatorSigns[k] === '-'))  {
          addminus.push(numeros[k]);
       } if ((operatorSigns[k] === '+' && operatorSigns[k+1] === '+') ||
          (operatorSigns[k] === '-' && operatorSigns[k+1] === '-') ||
@@ -773,11 +781,11 @@ function addSubtractOperation(a) {
      if (operatorSigns[i] === '+') {
             addminresult =  (addminresult +
             numeros[a[i]+1]);
-            
+              
       } if (operatorSigns[i]  === '-') {
             addminresult = (addminresult +                        
             numeros[a[i]+1]);
-            
+             
        }
      }  
     }
@@ -806,7 +814,7 @@ function totalreturn() {
       total = total.toLocaleString(undefined, {maximumFractionDigits: 7}); 
      } 
     }
-      
+
   } if (addminus.length == 0 && multdiv.length >= 1){
     total = multdiv.reduce((a,b) => a + b);
     if (total >= 999999999999999.00 || total <= -999999999999999.00) {
@@ -819,7 +827,7 @@ function totalreturn() {
         total = total.toLocaleString(undefined, {maximumFractionDigits: 7}); 
        } 
       }
-    
+       
     } if (addminus.length == 1 && multdiv.length == 0) {
      total = addminresult;
      if (total >= 999999999999999.00 || total <= -999999999999999.00) {
