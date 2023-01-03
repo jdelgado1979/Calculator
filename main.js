@@ -428,6 +428,11 @@ const regexA = /[0-9]*(\.)?[0-9]+/g;
  let newText;
  function backSpace() {
 
+
+  if (subDisplay2.value == subDisplay2.defaultValue || subDisplay1.innerHTML == num2 || subDisplay1.innerHTML == total || subDisplay2.value == ''){
+    return;
+  }
+
   // to eliminate decimal periods by themselves
   if (accumulatedVal[0] == '.' && accumulatedVal[accumulatedVal.length-1] == '.') {
     resetall();
@@ -877,6 +882,13 @@ let newTotal;
 
 function equalTotal() {
 
+  // this is to return if the display ends in a symbol
+  let testValue = accumulatedVal[accumulatedVal.length - 1];
+  let testValue2 = accumulatedSym[accumulatedSym.length - 1];
+  if ((accumulatedVal.length == 1) || testValue == '+' || testValue == '-' || testValue == '*' || testValue == '/' || (testValue2 == '.' && testValue == '.') || subDisplay1.innerHTM == total) { 
+   return;
+  }
+
   let cleanString = [];
   // this is to do multiplication by zero 
 
@@ -949,7 +961,7 @@ function equalTotal() {
   if ((subDisplay2.value == subDisplay2.defaultValue)){
     return;
   }
-
+  
  }
 
 
